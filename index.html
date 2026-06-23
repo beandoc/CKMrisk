@@ -440,7 +440,7 @@
             <h3 class="font-semibold text-sm">Dialysis-free survival — projected years to ESKD (eGFR threshold 15)</h3>
             <p class="text-[11px] text-muted mt-0.5">Linear extrapolation of chronic eGFR slope (yr 1–5) to ESKD threshold. Gap between bars = dialysis-free time gained by intervention.</p>
           </div>
-          <span class="text-[10px] text-muted bg-white/5 px-2 py-1 rounded-md">Horizon: 25 yr</span>
+          <span id="horizonBadge" class="text-[10px] text-muted bg-white/5 px-2 py-1 rounded-md">Horizon: 25 yr</span>
         </div>
         <div class="mt-3" style="height:280px;"><canvas id="eskdLineChart" style="width:100%;height:100%"></canvas></div>
         <div id="eskdBars" class="mt-4"></div>
@@ -766,10 +766,11 @@
   const ESKD_THRESHOLD = 15, ESKD_HORIZON = 25;
   function chronicSlope(s){ const drop=s[1]-s[s.length-1]; return Math.max(0.05, drop/(s.length-2)); }
   function yearsToESKD(startEgfr, slp){ if(startEgfr<=ESKD_THRESHOLD) return 0; return (startEgfr-ESKD_THRESHOLD)/slp; }
-  function declineLine(startEgfr, slp){
+  function declineLine(startEgfr, slp, horizon){
+    const h = horizon || ESKD_HORIZON;
     const t = yearsToESKD(startEgfr, slp);
-    if(t<=ESKD_HORIZON) return [{x:0,y:round(startEgfr,1)},{x:round(t,2),y:ESKD_THRESHOLD}];
-    return [{x:0,y:round(startEgfr,1)},{x:ESKD_HORIZON,y:round(startEgfr-slp*ESKD_HORIZON,1)}];
+    if(t<=h) return [{x:0,y:round(startEgfr,1)},{x:round(t,2),y:ESKD_THRESHOLD}];
+    return [{x:0,y:round(startEgfr,1)},{x:h,y:round(Math.max(ESKD_THRESHOLD, startEgfr-slp*h),1)}];
   }
 
   /* ══════════════════════════════════════════════
@@ -912,33 +913,149 @@
   }
 
   function buildEskdLineChart(ctx){
-    const threshPlugin = {
-      id:'eskdLine',
+    const COLORS = ['#ef4444','#3b82f6','#10b981'];
+    const NAMES  = ['Current','Simulated','Optimal'];
+
+    const eskdPlugin = {
+      id:'eskdViz',
       afterDraw(chart){
-        const {ctx:c, chartArea:{left,right}, scales:{y}} = chart;
-        const yP = y.getPixelForValue(ESKD_THRESHOLD);
+        const {ctx:c, chartArea:{left,right,top,bottom}, scales:{x,y}} = chart;
+        const yT   = y.getPixelForValue(ESKD_THRESHOLD);
+        const xMax = chart.options.scales.x.max;
+
+        /* 1 ── Amber shading below threshold */
         c.save();
-        c.strokeStyle='#f59e0b'; c.lineWidth=1.5; c.setLineDash([5,4]);
-        c.beginPath(); c.moveTo(left,yP); c.lineTo(right,yP); c.stroke();
-        c.setLineDash([]); c.fillStyle='#f59e0b'; c.font='11px Inter,sans-serif';
-        c.textAlign='right';
-        c.fillText('ESKD threshold (eGFR 15)',right-4,yP-5);
+        c.fillStyle = 'rgba(245,158,11,0.08)';
+        c.fillRect(left, yT, right-left, bottom-yT);
         c.restore();
+
+        /* 2 ── Threshold dashed line + label */
+        c.save();
+        c.strokeStyle='#f59e0b'; c.lineWidth=1.5; c.setLineDash([5,5]);
+        c.beginPath(); c.moveTo(left,yT); c.lineTo(right,yT); c.stroke();
+        c.setLineDash([]);
+        c.fillStyle='#f59e0b'; c.font='bold 10.5px Inter,sans-serif';
+        c.textAlign='right';
+        c.fillText('ESKD threshold (eGFR 15)',right-6,yT-6);
+        c.restore();
+
+        /* 3 ── Per-dataset: slope label + crossing marker */
+        const crossings = [];
+        chart.data.datasets.forEach((ds,i)=>{
+          const pts=ds.data;
+          if(!pts||pts.length<2) return;
+          const p0=pts[0], p1=pts[pts.length-1];
+          if(p0.x===p1.x) return;
+          const slope=(p1.y-p0.y)/(p1.x-p0.x); // mL/min/yr (negative)
+
+          /* Slope annotation — stacked at fixed x (~28% of axis width) */
+          const slopeLabelFrac = 0.28;
+          const slX = x.getPixelForValue(xMax * slopeLabelFrac);
+          const slY_base = y.getPixelForValue(p0.y + slope*(xMax * slopeLabelFrac));
+          const stackOff = (i-1)*18; // stack Current below, Optimal above
+          const slY = slY_base + stackOff;
+          const txt = `${slope.toFixed(2)} mL/min/yr`;
+
+          c.save();
+          /* pill background */
+          c.font = 'bold 10.5px Inter,sans-serif';
+          const tw = c.measureText(txt).width;
+          c.fillStyle = state.theme==='light' ? 'rgba(255,255,255,0.82)' : 'rgba(10,16,32,0.75)';
+          c.beginPath();
+          c.roundRect(slX+4, slY-13, tw+10, 17, 4);
+          c.fill();
+          c.fillStyle = COLORS[i];
+          c.textAlign='left';
+          c.fillText(txt, slX+9, slY);
+          c.restore();
+
+          /* Crossing — only if line terminates at threshold */
+          if(p1.y <= ESKD_THRESHOLD+0.5){
+            const xPx = x.getPixelForValue(p1.x);
+            crossings.push({t:p1.x, xPx, color:COLORS[i], name:NAMES[i]});
+
+            /* Vertical dashed crossing line */
+            c.save();
+            c.strokeStyle=COLORS[i]; c.lineWidth=1.2; c.setLineDash([4,4]);
+            c.globalAlpha=0.55;
+            c.beginPath(); c.moveTo(xPx,top); c.lineTo(xPx,yT); c.stroke();
+            c.setLineDash([]); c.globalAlpha=1;
+            c.restore();
+
+            /* Dot at crossing */
+            c.save();
+            c.fillStyle=COLORS[i];
+            c.beginPath(); c.arc(xPx,yT,5,0,Math.PI*2); c.fill();
+            c.fillStyle=state.theme==='light'?'#fff':'#080e1a';
+            c.beginPath(); c.arc(xPx,yT,2.5,0,Math.PI*2); c.fill();
+            c.restore();
+
+            /* Year label box just below threshold line */
+            const yrTxt = `${p1.x.toFixed(1)} yr`;
+            c.save();
+            c.font='bold 10.5px Inter,sans-serif';
+            const lw=c.measureText(yrTxt).width;
+            c.fillStyle=COLORS[i]+'22';
+            c.beginPath(); c.roundRect(xPx-lw/2-5, yT+8, lw+10, 16, 4); c.fill();
+            c.fillStyle=COLORS[i];
+            c.textAlign='center';
+            c.fillText(yrTxt, xPx, yT+20);
+            c.restore();
+          }
+        });
+
+        /* 4 ── Gain zone shading + double-headed arrow (Current → Optimal) */
+        const cur = crossings.find(c=>c.name==='Current');
+        const opt = crossings.find(c=>c.name==='Optimal');
+        if(cur && opt && opt.t > cur.t+0.3){
+          const gain = opt.t - cur.t;
+          const midX = (cur.xPx+opt.xPx)/2;
+
+          /* Blue gain zone between the two verticals */
+          c.save();
+          c.fillStyle='rgba(59,130,246,0.07)';
+          c.fillRect(cur.xPx, top, opt.xPx-cur.xPx, yT-top);
+          c.restore();
+
+          /* Arrow — sits just above threshold at yT-36 */
+          const arrowY = Math.max(top+28, yT-40);
+          const aH=5;
+          c.save();
+          c.strokeStyle='#3b82f6'; c.fillStyle='#3b82f6'; c.lineWidth=2;
+          c.beginPath(); c.moveTo(cur.xPx+10,arrowY); c.lineTo(opt.xPx-10,arrowY); c.stroke();
+          // Left arrowhead
+          c.beginPath(); c.moveTo(cur.xPx,arrowY); c.lineTo(cur.xPx+10,arrowY-aH); c.lineTo(cur.xPx+10,arrowY+aH); c.closePath(); c.fill();
+          // Right arrowhead
+          c.beginPath(); c.moveTo(opt.xPx,arrowY); c.lineTo(opt.xPx-10,arrowY-aH); c.lineTo(opt.xPx-10,arrowY+aH); c.closePath(); c.fill();
+
+          /* Arrow label */
+          const gainTxt = `+${gain.toFixed(1)} yr dialysis-free`;
+          c.font='bold 11px Inter,sans-serif';
+          const gtw=c.measureText(gainTxt).width;
+          c.fillStyle=state.theme==='light'?'rgba(255,255,255,0.88)':'rgba(10,16,32,0.75)';
+          c.beginPath(); c.roundRect(midX-gtw/2-6,arrowY-26,gtw+12,18,4); c.fill();
+          c.fillStyle='#93c5fd';
+          c.textAlign='center';
+          c.fillText(gainTxt, midX, arrowY-13);
+          c.restore();
+        }
       }
     };
+
     return new Chart(ctx, {
       type:'line',
       data:{ datasets:[
-        { label:'Current',   data:[], borderColor:'#ef4444', borderWidth:2.5, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 },
-        { label:'Simulated', data:[], borderColor:'#3b82f6', borderWidth:2.5, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 },
-        { label:'Optimal',   data:[], borderColor:'#10b981', borderWidth:2.5, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 }
+        { label:'Current',   data:[], borderColor:'#ef4444', backgroundColor:'transparent', borderWidth:2.5, borderDash:[8,4], pointRadius:3, parsing:false, tension:0 },
+        { label:'Simulated', data:[], borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:2.5, borderDash:[8,4], pointRadius:3, parsing:false, tension:0 },
+        { label:'Optimal',   data:[], borderColor:'#10b981', backgroundColor:'transparent', borderWidth:2.5, borderDash:[8,4], pointRadius:3, parsing:false, tension:0 }
       ]},
       options:{
         responsive:true, maintainAspectRatio:false,
-        animation:{ duration:480, easing:'easeOutCubic' },
+        animation:{ duration:520, easing:'easeOutCubic' },
+        layout:{ padding:{ bottom:4 } },
         plugins:{
           legend:{ display:true, labels:{ color:axisColor(), boxWidth:14, font:{size:11} } },
-          tooltip:{ callbacks:{ label:c=>`${c.dataset.label}: eGFR ${c.raw.y} at yr ${c.raw.x}` } }
+          tooltip:{ callbacks:{ label:d=>`${d.dataset.label}: eGFR ${d.raw.y} at yr ${d.raw.x}` } }
         },
         scales:{
           x:{ type:'linear', min:0, max:ESKD_HORIZON,
@@ -949,7 +1066,7 @@
               ticks:{ color:axisColor(), font:{size:11} }, grid:{ color:gridColor() } }
         }
       },
-      plugins:[threshPlugin, solidBgPlugin]
+      plugins:[eskdPlugin, solidBgPlugin]
     });
   }
 
@@ -1181,10 +1298,19 @@
 
     const sC=chronicSlope(egfrCurrent), sS=chronicSlope(egfrSim), sO=chronicSlope(egfrOpt);
     const tC=yearsToESKD(inp.egfr,sC), tS=yearsToESKD(inp.egfr,sS), tO=yearsToESKD(inp.egfr,sO);
-    eskdLineChart.data.datasets[0].data=declineLine(inp.egfr,sC);
-    eskdLineChart.data.datasets[1].data=declineLine(inp.egfr,sS);
-    eskdLineChart.data.datasets[2].data=declineLine(inp.egfr,sO);
+
+    // ── Dynamic horizon: scale to data + 25% headroom, cap at 25 ──
+    const finiteMax = [tC,tS,tO].filter(t=>t<ESKD_HORIZON);
+    const dynHorizon = finiteMax.length === 0
+      ? ESKD_HORIZON
+      : Math.min(ESKD_HORIZON, Math.max(5, Math.ceil(Math.max(...finiteMax) * 1.3)));
+
+    eskdLineChart.data.datasets[0].data=declineLine(inp.egfr,sC,dynHorizon);
+    eskdLineChart.data.datasets[1].data=declineLine(inp.egfr,sS,dynHorizon);
+    eskdLineChart.data.datasets[2].data=declineLine(inp.egfr,sO,dynHorizon);
+    eskdLineChart.options.scales.x.max=dynHorizon;
     eskdLineChart.options.scales.y.max=Math.max(60,Math.ceil((inp.egfr+5)/10)*10);
+    const hBadge=$('horizonBadge'); if(hBadge) hBadge.textContent=`Horizon: ${dynHorizon} yr`;
     eskdLineChart.update();
     const eskd={cur:tC,sim:tS,opt:tO};
     state._eskd=eskd;
