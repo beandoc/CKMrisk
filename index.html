@@ -273,9 +273,11 @@
 
   <script>
     /**************************************************************************
-     * Cardiorenal Journey — v2.1
-     * Includes all clinical bounds logic updates, multi-agent cap raises,
-     * UI active element sync fixes, and Chart.js export plugins.
+     * Cardiorenal Journey — v2.2
+     * Includes clinical bounds logic updates, multi-agent cap raises,
+     * UI active element sync fixes, Chart.js export plugins,
+     * AHA PREVENT age capping, and Established Damage limits for realistic 
+     * ESKD projections.
      **************************************************************************/
 
     const state = { profile: 'arjun', theme: 'dark' };
@@ -339,7 +341,11 @@
 
     // PREVENT 10yr
     function prevent10(params){
-      const age_term = (params.age - 55)/10;
+      // UPDATE: AHA PREVENT 10-year risk equations are strictly validated for ages 30 to 79.
+      // Cap the simulation age so long-term loops do not mathematically spiral.
+      const safeAge = Math.min(79, Math.max(30, params.age));
+      
+      const age_term = (safeAge - 55)/10;
       const nonHDL_mmol = (params.totalChol - params.hdl)*0.02586;
       const hdl_mmol = params.hdl*0.02586;
       const nonHDL_term = nonHDL_mmol - 3.5;
@@ -351,7 +357,6 @@
       const egfr_min = (Math.min(params.egfr,60)-60)/-15;
       const egfr_max = (Math.max(params.egfr,60)-90)/-15;
       
-      // Update: Capture broader class of BP meds for structural equations
       const htnMeds = (params.onACEi || params.onMRA || params.bpControlled) ? 1 : 0;
       const statin = params.statin?1:0;
       
@@ -448,7 +453,12 @@
         if(current < 30) floor += 0.5;                     
         if(cfg.diabetes && cfg.a1c > 8.0) floor += 0.3;    
         
-        // Update: Increased polypharmacy limit from 0.70 to 0.85
+        // UPDATE: Established damage limitations.
+        // A diabetic kidney with baseline macroalbuminuria (>=300) cannot return to a perfectly healthy aging curve.
+        if(cfg.diabetes && cfg.uacr >= 300) floor = Math.max(floor, 1.5);
+        // Age limitation: Older kidneys inherently decline slightly faster due to senescence.
+        if(cfg.age >= 65) floor = Math.max(floor, 1.2);
+
         protection = Math.min(protection, slope * 0.85);
 
         slope -= protection;
@@ -508,7 +518,6 @@
     function axisColor(){ return getComputedStyle(document.body).color; }
     function gridColor(){ return state.theme==='light' ? 'rgba(2,6,23,0.08)' : 'rgba(255,255,255,0.06)'; }
 
-    // Fix: Dark Mode background for PDF export via JS plugin
     const solidBackgroundPlugin = {
       id: 'customCanvasBackgroundColor',
       beforeDraw: (chart) => {
@@ -577,7 +586,6 @@
           animation:{ duration:500, easing:'easeOutCubic' },
           plugins:{ 
             legend:{ display:true, labels:{ color: axisColor(), boxWidth:14 } },
-            // Update: Changed c.parsed.y to c.raw.y since parsing is disabled
             tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${c.raw.y} mL/min at ${c.raw.x} yr` } } 
           },
           scales:{
@@ -674,7 +682,6 @@
     }
 
     // ---------- Read inputs ----------
-    // Update: Safely checking activeElement to prevent focus collision with sliders
     function valOf(numEl, sliderEl, isFloat){
       if (document.activeElement === sliderEl) {
         return isFloat ? parseFloat(sliderEl.value) : Math.round(sliderEl.value);
@@ -888,7 +895,6 @@
       const rows=[];
       rows.push(['Profile','Age','Sex','eGFR','eGFR_stage','UACR','KFRE_2yr','KFRE_5yr','CVD_10yr','Mortality_10yr','ESKDfree_cur_yr','ESKDfree_sim_yr','ESKDfree_opt_yr','On_ACEi','On_SGLT2i','On_MRA','On_Statin','On_Semaglutide'].join(','));
       
-      // Update: Defensive boolean mappings for string export
       rows.push([state.profile,inp.age,inp.sex,inp.egfr,inp.egfrStage,inp.uacr,inp.kfre2,inp.kfre5,inp.cvd10,inp.mort10,
         inp.eskdCur!==undefined?round(inp.eskdCur,1):'',inp.eskdSim!==undefined?round(inp.eskdSim,1):'',inp.eskdOpt!==undefined?round(inp.eskdOpt,1):'',
         (inp.onACEi == true ? 1 : 0), (inp.onSGLT2i == true ? 1 : 0), (inp.onMRA == true ? 1 : 0), (inp.onStatin == true ? 1 : 0), (inp.onSema == true ? 1 : 0)].join(','));
@@ -916,7 +922,6 @@
       doc.text(`10y CVD: ${inp.cvd10}%   10y mortality: ${inp.mort10}%`, 30, 138);
       doc.text(`Semaglutide: ${inp.onSema?'Yes':'No'}   SGLT2i: ${inp.onSGLT2i?'Yes':'No'}`, 30, 156);
       
-      // Update: Dimensions bounded to standard A4 inner width
       doc.addImage(dom.egfrCanvas.toDataURL('image/png',1.0),'PNG',30,170,386,130);
       doc.addImage(dom.cvdCanvas.toDataURL('image/png',1.0),'PNG',30,320,386,130);
       doc.addImage(dom.mortCanvas.toDataURL('image/png',1.0),'PNG',30,470,386,130);
@@ -958,5 +963,3 @@
   </script>
 </body>
 </html>
-
-```
