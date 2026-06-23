@@ -12,954 +12,1338 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            tealgrad: { start: '#0ea5e9', end: '#14b8a6' },
-            base: { DEFAULT: '#0f172a', card: '#0b1220', soft: '#111827', border: '#243244' }
-          }
-        }
-      }
+      theme: { extend: { colors: {
+        base: { DEFAULT: '#0f172a', card: '#0b1220', soft: '#111827', border: '#243244' }
+      }}}
     }
   </script>
 
   <style>
     :root { --transition-fast: 0.45s; --card-radius: 14px; }
-    html, body { height:100%; }
+    html,body { height:100%; }
     body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-    .gradient-header { background: linear-gradient(90deg, #0ea5e9 0%, #14b8a6 100%); }
+
+    /* ── Header ── */
+    .gradient-header { background: linear-gradient(100deg, #0369a1 0%, #0ea5e9 50%, #0d9488 100%); }
+
+    /* ── Cards ── */
     .card {
       border-radius: var(--card-radius);
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
       padding: 16px;
-      box-shadow: 0 6px 18px rgba(2,6,23,0.5);
+      box-shadow: 0 6px 22px rgba(2,6,23,0.55);
     }
-    .light body { background: #f6f7fb; color: #0b1220; }
-    .light .card { background: #ffffff; border-color: #e6eef0; box-shadow: 0 8px 22px rgba(2,6,23,0.06); }
-    .light .text-muted { color: #475569; }
-    .text-muted { color: #9ca3af; }
-    select { color: inherit; }
+    .light .card { background:#ffffff; border-color:#e2eaf0; box-shadow:0 4px 16px rgba(2,6,23,0.07); }
+    .light body  { background:#f0f4f8; color:#0b1220; }
+    .light .text-muted { color:#475569; }
+    .text-muted { color:#94a3b8; }
+
+    /* ── Inputs ── */
+    select { color:inherit; }
     .light select { background:#fff !important; color:#0b1220 !important; border-color:#cbd5e1 !important; }
     .light input[type="range"] { accent-color:#0ea5e9; }
     .num-in {
-      width: 62px; text-align: right; font-size: 12px; font-weight: 600;
-      padding: 1px 5px; border-radius: 6px; color: inherit;
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      width:64px; text-align:right; font-size:12px; font-weight:600;
+      padding:2px 5px; border-radius:6px; color:inherit;
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
     }
-    .num-in:focus { outline: none; border-color: #0ea5e9; background: rgba(14,165,233,0.10); }
-    .num-in::-webkit-outer-spin-button, .num-in::-webkit-inner-spin-button { opacity: 0.5; }
+    .num-in:focus { outline:none; border-color:#0ea5e9; background:rgba(14,165,233,0.10); }
+    .num-in::-webkit-outer-spin-button,.num-in::-webkit-inner-spin-button { opacity:0.5; }
     .light .num-in { background:#f1f5f9; color:#0b1220; border-color:#cbd5e1; }
     .num-in.out-of-range { border-color:#f59e0b; background:rgba(245,158,11,0.12); }
 
-    .btn-tab { transition: all var(--transition-fast); }
-    .btn-tab-active { box-shadow: 0 6px 18px rgba(14,165,233,0.12); border-color: rgba(14,165,233,0.6); background: rgba(255,255,255,0.04); }
+    /* ── Tabs ── */
+    .btn-tab { transition:all var(--transition-fast); }
+    .btn-tab-active { box-shadow:0 6px 18px rgba(14,165,233,0.18); border-color:rgba(14,165,233,0.75) !important; background:rgba(14,165,233,0.08) !important; }
 
-    .kpi-bar { width:100%; height:8px; background: rgba(255,255,255,0.04); border-radius:8px; overflow:hidden; margin-top:8px; }
-    .light .kpi-bar { background: rgba(2,6,23,0.06); }
-    .kpi-bar .fill { height:100%; width:0%; transition: width var(--transition-fast) ease, background var(--transition-fast) ease; }
-
+    /* ── KPI bars ── */
+    .kpi-bar { width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:8px; overflow:hidden; margin-top:8px; }
+    .light .kpi-bar { background:rgba(2,6,23,0.07); }
+    .kpi-bar .fill { height:100%; width:0%; transition:width var(--transition-fast) ease, background var(--transition-fast) ease; }
     .kpi-tooltip {
-      position: absolute;
-      transform: translate(-50%, -140%);
-      background: rgba(2,6,23,0.9);
-      color: white;
-      padding: 6px 8px;
-      font-size: 12px;
-      border-radius: 6px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity .15s ease;
-      z-index: 50;
+      position:absolute; transform:translate(-50%,-140%);
+      background:rgba(2,6,23,0.92); color:white; padding:6px 10px; font-size:12px;
+      border-radius:8px; white-space:nowrap; pointer-events:none; opacity:0;
+      transition:opacity .15s ease; z-index:50;
     }
-    .kpi-tooltip.show { opacity: 1; }
+    .kpi-tooltip.show { opacity:1; }
 
-    .info-dot { display:inline-block; width:18px; height:18px; border-radius:999px; background: rgba(255,255,255,0.08); text-align:center; line-height:18px; font-size:11px; cursor:help; margin-left:6px; }
-    .light .info-dot { background: rgba(2,6,23,0.08); }
-    .popover { position:absolute; z-index:60; background:#0f172a; color:white; padding:8px 10px; border-radius:8px; width:230px; font-size:13px; box-shadow:0 6px 18px rgba(2,6,23,0.4); display:none; }
-    .light .popover { background:#fff; color:#0b1220; border:1px solid #e6eef0; }
-
-    .compact-gap > * + * { margin-top: 0.6rem; }
-    @media (max-width: 768px) {
-      .card { padding: 12px; }
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); gap:8px; }
+    /* ── Info dots & popovers ── */
+    .info-dot {
+      display:inline-block; width:18px; height:18px; border-radius:999px;
+      background:rgba(255,255,255,0.09); text-align:center; line-height:18px;
+      font-size:11px; cursor:help; margin-left:6px; user-select:none;
     }
-    .badge-grad { background: linear-gradient(90deg, rgba(14,165,233,0.12), rgba(20,184,166,0.12)); padding:4px 8px; border-radius:999px; font-weight:600; color: #bfeaf0; }
-    .sema-badge { background: linear-gradient(90deg, rgba(168,85,247,0.18), rgba(217,70,239,0.18)); color:#e9d5ff; padding:2px 7px; border-radius:999px; font-size:11px; font-weight:600; }
+    .light .info-dot { background:rgba(2,6,23,0.10); color:#475569; }
+    .popover {
+      position:fixed; z-index:9999; background:#0f172a; color:white;
+      padding:10px 13px; border-radius:10px; width:250px; font-size:12.5px;
+      line-height:1.55; box-shadow:0 8px 28px rgba(2,6,23,0.55);
+      display:none; border:1px solid rgba(255,255,255,0.1);
+    }
+    .light .popover { background:#fff; color:#0b1220; border:1px solid #e6eef0; box-shadow:0 8px 24px rgba(2,6,23,0.12); }
+
+    /* ── Badges ── */
+    .badge-grad { background:linear-gradient(90deg,rgba(14,165,233,0.15),rgba(20,184,166,0.15)); padding:4px 10px; border-radius:999px; font-weight:600; color:#bfeaf0; font-size:12px; }
+    .sema-badge { background:linear-gradient(90deg,rgba(168,85,247,0.18),rgba(217,70,239,0.18)); color:#e9d5ff; padding:2px 7px; border-radius:999px; font-size:11px; font-weight:600; }
     .light .sema-badge { color:#7e22ce; }
+
+    /* ── Risk colour system ── */
+    /* Used for KPI value numbers */
+    .rc-low       { color:#10b981; }
+    .rc-borderline{ color:#eab308; }
+    .rc-moderate  { color:#fb923c; }
+    .rc-intermediate{ color:#f97316; }
+    .rc-high      { color:#ef4444; }
+    .rc-veryhigh  { color:#dc2626; }
+
+    /* Risk badge pills */
+    .rb { padding:2px 9px; border-radius:999px; font-size:11px; font-weight:700; display:inline-block; }
+    .rb-low        { background:rgba(16,185,129,0.13); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+    .rb-borderline { background:rgba(234,179,8,0.13); color:#eab308; border:1px solid rgba(234,179,8,0.3); }
+    .rb-moderate   { background:rgba(251,146,60,0.13); color:#fb923c; border:1px solid rgba(251,146,60,0.3); }
+    .rb-intermediate{ background:rgba(249,115,22,0.13); color:#f97316; border:1px solid rgba(249,115,22,0.3); }
+    .rb-high       { background:rgba(239,68,68,0.13); color:#ef4444; border:1px solid rgba(239,68,68,0.3); }
+    .rb-veryhigh   { background:rgba(220,38,38,0.16); color:#dc2626; border:1px solid rgba(220,38,38,0.35); }
+
+    /* ── KDIGO CGA grid ── */
+    .kdigo-grid { display:grid; grid-template-columns:44px repeat(3,1fr); gap:3px; font-size:10px; }
+    .kdigo-hdr { display:flex; align-items:center; justify-content:center; font-weight:700; font-size:9.5px; color:#94a3b8; }
+    .kdigo-row-lbl { display:flex; align-items:center; justify-content:center; font-weight:700; font-size:9px; color:#94a3b8; }
+    .kdigo-cell {
+      height:28px; border-radius:5px; display:flex; align-items:center; justify-content:center;
+      font-size:9px; font-weight:600; transition:all 0.35s ease; cursor:default;
+    }
+    .kdigo-g { background:rgba(16,185,129,0.18); color:#10b981; }
+    .kdigo-y { background:rgba(234,179,8,0.18); color:#ca8a04; }
+    .kdigo-o { background:rgba(249,115,22,0.18); color:#ea580c; }
+    .kdigo-r { background:rgba(239,68,68,0.18); color:#dc2626; }
+    .light .kdigo-g { background:rgba(16,185,129,0.14); }
+    .light .kdigo-y { background:rgba(234,179,8,0.14); }
+    .light .kdigo-o { background:rgba(249,115,22,0.14); }
+    .light .kdigo-r { background:rgba(239,68,68,0.14); }
+    .kdigo-active {
+      box-shadow:0 0 0 2.5px white, 0 0 10px rgba(255,255,255,0.5) !important;
+      transform:scale(1.1); z-index:5; position:relative;
+    }
+    .light .kdigo-active { box-shadow:0 0 0 2.5px #0b1220, 0 0 8px rgba(2,6,23,0.35) !important; }
+
+    /* ── Disclaimer ── */
+    .disclaimer-strip {
+      background:linear-gradient(90deg,rgba(245,158,11,0.07),rgba(249,115,22,0.07));
+      border:1px solid rgba(245,158,11,0.22); border-radius:10px;
+      padding:10px 16px; font-size:12px; color:#fbbf24; margin-bottom:14px;
+      display:flex; align-items:flex-start; gap:10px;
+    }
+    .light .disclaimer-strip { color:#92400e; background:rgba(245,158,11,0.05); border-color:rgba(245,158,11,0.25); }
+
+    /* ── Evidence panel ── */
+    .evidence-row { padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; gap:10px; align-items:flex-start; }
+    .light .evidence-row { border-color:rgba(2,6,23,0.06); }
+    .evidence-row:last-child { border-bottom:none; }
+    .trial-pill { min-width:78px; text-align:center; padding:3px 6px; border-radius:6px; font-size:10px; font-weight:700; letter-spacing:0.4px; }
+    .trial-blue  { background:rgba(14,165,233,0.15); color:#38bdf8; border:1px solid rgba(14,165,233,0.25); }
+    .trial-teal  { background:rgba(20,184,166,0.15); color:#2dd4bf; border:1px solid rgba(20,184,166,0.25); }
+    .trial-purple{ background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.25); }
+    .trial-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.25); }
+    .trial-amber { background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.25); }
+
+    /* ── Layout helpers ── */
+    .compact-gap > * + * { margin-top:0.6rem; }
+    @media(max-width:768px){ .card{padding:12px;} .kpi-grid{grid-template-columns:repeat(2,1fr);gap:8px;} }
+
+    /* ── KPI pop animation ── */
+    @keyframes kpiPop { 0%{opacity:0.6;transform:scale(0.97)} 100%{opacity:1;transform:scale(1)} }
+    .kpi-pop { animation:kpiPop 0.28s ease-out; }
   </style>
 </head>
 
-<body class="bg-base text-white antialiased">
-  <header class="sticky top-0 z-30 gradient-header text-white">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-      <div class="flex items-center gap-3">
-        <h1 class="text-lg md:text-2xl font-extrabold leading-snug">Cardiorenal Compass — <span class="text-white/90">Patient Stories</span></h1>
-        <span class="badge-grad hidden md:inline-block">Navigating Glycemia → Glomeruli Journey</span>
-      </div>
-      <div class="ml-auto flex items-center gap-3">
-        <button id="exportCSV" class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm">Export CSV</button>
-        <button id="exportPDF" class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm">Export PDF</button>
-        <button id="themeToggle" class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm">Light</button>
+<body class="bg-[#080e1a] text-white antialiased">
+
+<!-- ═══════════════════════════════════════════ HEADER ═══ -->
+<header class="sticky top-0 z-30 gradient-header text-white shadow-lg">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
+    <div class="flex items-center gap-3 min-w-0">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" class="shrink-0">
+        <circle cx="14" cy="14" r="13" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <path d="M7 14 Q10 8 14 14 Q18 20 21 14" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <circle cx="14" cy="14" r="3" fill="rgba(255,255,255,0.85)"/>
+      </svg>
+      <div>
+        <h1 class="text-lg md:text-xl font-extrabold leading-snug tracking-tight">Cardiorenal Compass <span class="font-normal opacity-80">— Patient Stories</span></h1>
+        <div class="text-xs opacity-70 hidden md:block">Glycaemia → Glomeruli Journey · CKD-EPI 2021 · KFRE · AHA PREVENT 2024</div>
       </div>
     </div>
-  </header>
+    <div class="ml-auto flex items-center gap-2 shrink-0">
+      <button id="exportCSV" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm font-medium">⬇ CSV</button>
+      <button id="exportPDF" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm font-medium">⬇ PDF</button>
+      <button id="themeToggle" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm font-medium">☀ Light</button>
+    </div>
+  </div>
+</header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-      <section class="lg:col-span-4 space-y-4">
-        <div class="card">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h2 class="text-md font-semibold">Select hypothetical patient</h2>
-              <p class="text-xs text-muted mt-1">Toggle between two patient stories to simulate real-world scenarios.</p>
+<!-- ═══════════════════════════════════════════ MAIN ═══ -->
+<main class="max-w-7xl mx-auto px-4 py-5">
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+    <!-- ═══ LEFT PANEL ═══ -->
+    <section class="lg:col-span-4 space-y-4">
+
+      <!-- Patient selector -->
+      <div class="card">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 class="text-sm font-semibold tracking-wide uppercase text-muted">Hypothetical patient</h2>
+            <p class="text-xs text-muted mt-0.5">Toggle between two stories to simulate real-world scenarios.</p>
+          </div>
+          <span class="text-[10px] text-muted bg-white/5 px-2 py-1 rounded-md">Pune, India</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mt-3">
+          <button id="cardArjun" class="btn-tab btn-tab-active flex items-center gap-3 rounded-lg p-2.5 border border-white/10">
+            <div class="w-10 h-10 rounded-full bg-blue-600 grid place-items-center font-bold text-sm shrink-0">A</div>
+            <div class="text-left">
+              <div class="font-semibold text-sm">Arjun <span class="text-xs text-muted">35 yr</span></div>
+              <div class="text-xs text-muted">IT engineer · pre-DM</div>
             </div>
-            <div class="text-xs text-muted">Pune, India</div>
-          </div>
+          </button>
+          <button id="cardMeera" class="btn-tab flex items-center gap-3 rounded-lg p-2.5 border border-white/10">
+            <div class="w-10 h-10 rounded-full bg-pink-600 grid place-items-center font-bold text-sm shrink-0">M</div>
+            <div class="text-left">
+              <div class="font-semibold text-sm">Meera <span class="text-xs text-muted">41 yr</span></div>
+              <div class="text-xs text-muted">Teacher · T2D + CKD</div>
+            </div>
+          </button>
+        </div>
+        <div class="mt-3 bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.05]">
+          <div class="text-[10px] font-semibold uppercase tracking-wide text-muted mb-1">Clinical narrative</div>
+          <div id="story" class="text-xs leading-relaxed text-gray-300"></div>
+        </div>
+      </div>
 
-          <div class="grid grid-cols-2 gap-3 mt-4">
-            <button id="cardArjun" class="btn-tab btn-tab-active flex items-center gap-3 rounded-lg p-2 border border-white/10">
-              <div class="w-10 h-10 rounded-full bg-blue-600 grid place-items-center font-bold">A</div>
-              <div class="text-left">
-                <div class="font-semibold">Arjun <span class="text-xs text-muted">35</span></div>
-                <div class="text-xs text-muted">IT engineer</div>
-              </div>
-            </button>
-            <button id="cardMeera" class="btn-tab flex items-center gap-3 rounded-lg p-2 border border-white/10">
-              <div class="w-10 h-10 rounded-full bg-pink-600 grid place-items-center font-bold">M</div>
-              <div class="text-left">
-                <div class="font-semibold">Meera <span class="text-xs text-muted">41</span></div>
-                <div class="text-xs text-muted">Teacher, T2D</div>
-              </div>
-            </button>
-          </div>
+      <!-- KPI grid -->
+      <div class="grid grid-cols-2 gap-3 kpi-grid">
+        <!-- eGFR -->
+        <div class="card text-center">
+          <div class="text-[10px] uppercase font-semibold text-muted tracking-wide">eGFR (CKD-EPI 2021)</div>
+          <div id="egfrNow" class="text-3xl font-extrabold mt-1 kpi-pop">—</div>
+          <div class="text-[10px] text-muted mt-0.5">mL/min/1.73m²</div>
+          <div id="egfrStage" class="text-xs font-semibold mt-1"></div>
+          <div class="relative kpi-bar mt-2"><div id="barEgfr" class="fill" style="background:linear-gradient(90deg,#0ea5e9,#14b8a6);"></div><div id="tipEgfr" class="kpi-tooltip">—</div></div>
+        </div>
 
-          <div class="mt-4">
-            <div class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border border-white/10 bg-white/5 mb-2">Patient story</div>
-            <div id="story" class="text-sm leading-relaxed text-gray-200"></div>
+        <!-- KFRE 2yr -->
+        <div class="card text-center">
+          <div class="text-[10px] uppercase font-semibold text-muted tracking-wide">KFRE 2-yr
+            <span class="info-dot" data-info="Kidney Failure Risk Equation (Tangri 2016, JAMA). 4-variable model: age, sex, eGFR, ln(UACR). Validated in CKD G3–G5. Thresholds: &lt;3% Low · 3–6% Moderate · 7–14% High · ≥15% Very High.">i</span>
+          </div>
+          <div id="kfre2" class="text-3xl font-extrabold mt-1 kpi-pop">—</div>
+          <div id="kfre2Cat" class="mt-1 rb rb-low inline-block"></div>
+          <div class="relative kpi-bar mt-2"><div id="barKFRE2" class="fill" style="background:linear-gradient(90deg,#06b6d4,#0891b2);"></div><div id="tipKFRE2" class="kpi-tooltip">—</div></div>
+        </div>
+
+        <!-- KFRE 5yr -->
+        <div class="card text-center">
+          <div class="text-[10px] uppercase font-semibold text-muted tracking-wide">KFRE 5-yr
+            <span class="info-dot" data-info="5-year KFRE (Tangri 2016, JAMA). Thresholds per KDIGO 2022: &lt;5% Low · 5–14% Moderate · 15–29% High · ≥30% Very High.">i</span>
+          </div>
+          <div id="kfre5" class="text-3xl font-extrabold mt-1 kpi-pop">—</div>
+          <div id="kfre5Cat" class="mt-1 rb rb-low inline-block"></div>
+          <div class="relative kpi-bar mt-2"><div id="barKFRE5" class="fill" style="background:linear-gradient(90deg,#7dd3fc,#60a5fa);"></div><div id="tipKFRE5" class="kpi-tooltip">—</div></div>
+        </div>
+
+        <!-- 10yr CVD -->
+        <div class="card text-center">
+          <div class="text-[10px] uppercase font-semibold text-muted tracking-wide">10-yr CVD (PREVENT)
+            <span class="info-dot" data-info="AHA PREVENT 2024 (Khan, Circulation). Predicts 10-yr CHD+Stroke+HF+AF composite. Validated 30–79 yr. Thresholds: &lt;5% Low · 5–7.5% Borderline · 7.5–20% Intermediate · ≥20% High.">i</span>
+          </div>
+          <div id="cvd10" class="text-3xl font-extrabold mt-1 kpi-pop">—</div>
+          <div id="cvdCat" class="mt-1 rb rb-low inline-block"></div>
+          <div class="relative kpi-bar mt-2"><div id="barCVD" class="fill" style="background:linear-gradient(90deg,#34d399,#10b981);"></div><div id="tipCVD" class="kpi-tooltip">—</div></div>
+        </div>
+
+        <!-- Mortality -->
+        <div class="card text-center col-span-2">
+          <div class="text-[10px] uppercase font-semibold text-muted tracking-wide">10-yr All-cause mortality
+            <span class="info-dot" data-info="⚠ Pedagogical composite only — NOT a validated risk score. Modelled as CVD-attributable fraction + eGFR-based CKD mortality contribution + age-related hazard, with published drug effect multipliers (FLOW, FIDELIO, SELECT). Use for educational comparison only.">i</span>
+          </div>
+          <div id="mort10" class="text-3xl font-extrabold mt-1 kpi-pop">—</div>
+          <div class="flex items-center justify-center gap-2 mt-1">
+            <div id="mortCat" class="rb rb-low inline-block"></div>
+            <span class="text-[10px] text-amber-400/80 font-medium">⚠ modelled</span>
+          </div>
+          <div class="relative kpi-bar mt-2"><div id="barMort" class="fill" style="background:linear-gradient(90deg,#f59e0b,#ef4444);"></div><div id="tipMort" class="kpi-tooltip">—</div></div>
+        </div>
+      </div>
+
+      <!-- KDIGO CGA grid -->
+      <div class="card">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-semibold uppercase tracking-wide text-muted">KDIGO CGA Risk Category</h3>
+          <span id="kdigoBadge" class="rb rb-low text-xs">—</span>
+        </div>
+        <p class="text-[10px] text-muted mb-3">Combined eGFR × Albuminuria prognosis grid (KDIGO 2022). Highlighted cell = current patient.</p>
+        <!-- Grid: 6 eGFR rows × 3 ACR cols + labels -->
+        <div class="kdigo-grid">
+          <div></div>
+          <div class="kdigo-hdr">A1<br><span class="font-normal opacity-70">&lt;30</span></div>
+          <div class="kdigo-hdr">A2<br><span class="font-normal opacity-70">30–299</span></div>
+          <div class="kdigo-hdr">A3<br><span class="font-normal opacity-70">≥300</span></div>
+
+          <div class="kdigo-row-lbl">G1<br><span class="font-normal opacity-60">≥90</span></div>
+          <div id="kg_G1_A1" class="kdigo-cell kdigo-g">●</div>
+          <div id="kg_G1_A2" class="kdigo-cell kdigo-y">●</div>
+          <div id="kg_G1_A3" class="kdigo-cell kdigo-o">●</div>
+
+          <div class="kdigo-row-lbl">G2<br><span class="font-normal opacity-60">60–89</span></div>
+          <div id="kg_G2_A1" class="kdigo-cell kdigo-g">●</div>
+          <div id="kg_G2_A2" class="kdigo-cell kdigo-y">●</div>
+          <div id="kg_G2_A3" class="kdigo-cell kdigo-o">●</div>
+
+          <div class="kdigo-row-lbl">G3a<br><span class="font-normal opacity-60">45–59</span></div>
+          <div id="kg_G3a_A1" class="kdigo-cell kdigo-y">●</div>
+          <div id="kg_G3a_A2" class="kdigo-cell kdigo-o">●</div>
+          <div id="kg_G3a_A3" class="kdigo-cell kdigo-r">●</div>
+
+          <div class="kdigo-row-lbl">G3b<br><span class="font-normal opacity-60">30–44</span></div>
+          <div id="kg_G3b_A1" class="kdigo-cell kdigo-o">●</div>
+          <div id="kg_G3b_A2" class="kdigo-cell kdigo-r">●</div>
+          <div id="kg_G3b_A3" class="kdigo-cell kdigo-r">●</div>
+
+          <div class="kdigo-row-lbl">G4<br><span class="font-normal opacity-60">15–29</span></div>
+          <div id="kg_G4_A1" class="kdigo-cell kdigo-r">●</div>
+          <div id="kg_G4_A2" class="kdigo-cell kdigo-r">●</div>
+          <div id="kg_G4_A3" class="kdigo-cell kdigo-r">●</div>
+
+          <div class="kdigo-row-lbl">G5<br><span class="font-normal opacity-60">&lt;15</span></div>
+          <div id="kg_G5_A1" class="kdigo-cell kdigo-r">●</div>
+          <div id="kg_G5_A2" class="kdigo-cell kdigo-r">●</div>
+          <div id="kg_G5_A3" class="kdigo-cell kdigo-r">●</div>
+        </div>
+        <div id="kdigoNote" class="text-[10px] text-muted mt-2"></div>
+      </div>
+
+      <!-- Inputs -->
+      <div class="card compact-gap">
+        <h3 class="text-sm font-semibold">Patient parameters</h3>
+        <p class="text-xs text-muted">Adjust sliders or type values — all outputs update live.</p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+          <div><div class="text-xs text-muted flex justify-between items-center"><span>Age (yr)</span><input id="ageNum" type="number" min="30" max="85" step="1" value="40" class="num-in"></div><input id="age" type="range" min="30" max="85" value="40" class="w-full mt-1"></div>
+          <div><div class="text-xs text-muted flex justify-between items-center"><span>Height (cm)</span><input id="heightNum" type="number" min="140" max="200" step="1" value="170" class="num-in"></div><input id="height" type="range" min="140" max="200" value="170" class="w-full mt-1"></div>
+          <div><div class="text-xs text-muted flex justify-between items-center"><span>Weight (kg)</span><input id="weightNum" type="number" min="40" max="140" step="1" value="74" class="num-in"></div><input id="weight" type="range" min="40" max="140" value="74" class="w-full mt-1"></div>
+          <div><label class="text-xs text-muted mb-1 block">Sex</label><select id="sex" class="w-full rounded-lg border border-white/10 bg-base p-2 text-sm"><option value="male">Male</option><option value="female">Female</option></select></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+          <div>
+            <div class="text-xs text-muted flex justify-between items-center">
+              <span>S. Creatinine (mg/dL)</span><input id="creatinineNum" type="number" min="0.4" max="12" step="0.01" value="1.00" class="num-in">
+            </div><input id="creatinine" type="range" min="0.4" max="6" step="0.01" value="1.0" class="w-full mt-1">
+          </div>
+          <div>
+            <div class="text-xs text-muted flex justify-between items-center">
+              <span>UACR (mg/g)<span class="info-dot" data-info="Urine albumin-to-creatinine ratio. Used in KFRE as ln(UACR). Centering: ln(170 mg/g)=5.137 per Tangri 2016.">i</span></span>
+              <input id="uacrNum" type="number" min="1" max="11000" step="1" value="50" class="num-in">
+            </div><input id="uacr" type="range" min="5" max="3000" step="1" value="50" class="w-full mt-1">
+          </div>
+          <div>
+            <div class="text-xs text-muted flex justify-between items-center"><span>SBP (mmHg)</span><input id="sbpNum" type="number" min="80" max="220" step="1" value="130" class="num-in"></div>
+            <input id="sbp" type="range" min="90" max="200" value="130" class="w-full mt-1">
+          </div>
+          <div>
+            <div class="text-xs text-muted flex justify-between items-center"><span>HbA1c (%)</span><input id="a1cNum" type="number" min="4" max="16" step="0.1" value="6.5" class="num-in"></div>
+            <input id="a1c" type="range" min="4.5" max="12" step="0.1" value="6.5" class="w-full mt-1">
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 kpi-grid">
-          <div class="card text-center">
-            <div class="text-xs uppercase text-muted">eGFR</div>
-            <div id="egfrNow" class="text-3xl font-extrabold mt-1">—</div>
-            <div id="egfrStage" class="text-xs text-muted"></div>
-            <div class="relative kpi-bar mt-3"><div id="barEgfr" class="fill" style="background:linear-gradient(90deg,#0ea5e9,#14b8a6);"></div><div id="tipEgfr" class="kpi-tooltip">—</div></div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+          <div>
+            <div class="text-xs text-muted flex justify-between items-center"><span>Total Chol (mg/dL)</span><input id="tcNum" type="number" min="80" max="400" step="1" value="200" class="num-in"></div>
+            <input id="tc" type="range" min="120" max="320" value="200" class="w-full mt-1">
           </div>
-          <div class="card text-center">
-            <div class="text-xs uppercase text-muted">KFRE 2-yr</div>
-            <div id="kfre2" class="text-3xl font-extrabold mt-1">—</div>
-            <div id="kfre2Cat" class="text-xs text-muted"></div>
-            <div class="relative kpi-bar mt-3"><div id="barKFRE2" class="fill" style="background:linear-gradient(90deg,#06b6d4,#0891b2);"></div><div id="tipKFRE2" class="kpi-tooltip">—</div></div>
+          <div>
+            <div class="text-xs text-muted flex justify-between items-center"><span>HDL (mg/dL)</span><input id="hdlNum" type="number" min="15" max="120" step="1" value="45" class="num-in"></div>
+            <input id="hdl" type="range" min="20" max="100" value="45" class="w-full mt-1">
           </div>
-          <div class="card text-center">
-            <div class="text-xs uppercase text-muted">KFRE 5-yr</div>
-            <div id="kfre5" class="text-3xl font-extrabold mt-1">—</div>
-            <div id="kfre5Cat" class="text-xs text-muted"></div>
-            <div class="relative kpi-bar mt-3"><div id="barKFRE5" class="fill" style="background:linear-gradient(90deg,#7dd3fc,#60a5fa);"></div><div id="tipKFRE5" class="kpi-tooltip">—</div></div>
-          </div>
-          <div class="card text-center">
-            <div class="text-xs uppercase text-muted">10-yr CVD</div>
-            <div id="cvd10" class="text-3xl font-extrabold mt-1">—</div>
-            <div id="cvdCat" class="text-xs text-muted"></div>
-            <div class="relative kpi-bar mt-3"><div id="barCVD" class="fill" style="background:linear-gradient(90deg,#34d399,#10b981);"></div><div id="tipCVD" class="kpi-tooltip">—</div></div>
-          </div>
-          <div class="card text-center col-span-2">
-            <div class="text-xs uppercase text-muted">10-yr all-cause mortality (modelled)</div>
-            <div id="mort10" class="text-3xl font-extrabold mt-1">—</div>
-            <div id="mortCat" class="text-xs text-muted"></div>
-            <div class="relative kpi-bar mt-3"><div id="barMort" class="fill" style="background:linear-gradient(90deg,#f59e0b,#ef4444);"></div><div id="tipMort" class="kpi-tooltip">—</div></div>
+          <div>
+            <label class="text-xs text-muted mb-1 block">Population</label>
+            <select id="population" class="w-full rounded-lg border border-white/10 bg-base p-2 text-sm">
+              <option value="asian">South/East Asian</option>
+              <option value="general">General</option>
+            </select>
           </div>
         </div>
 
-        <div class="card compact-gap">
-          <h3 class="text-md font-semibold">Inputs (compact)</h3>
-          <p class="text-xs text-muted">Adjust sliders and toggles — charts update dynamically.</p>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>Age</span><input id="ageNum" type="number" min="30" max="85" step="1" value="40" class="num-in"></div><input id="age" type="range" min="30" max="85" value="40" class="w-full"></div>
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>Height (cm)</span><input id="heightNum" type="number" min="140" max="200" step="1" value="170" class="num-in"></div><input id="height" type="range" min="140" max="200" value="170" class="w-full"></div>
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>Weight (kg)</span><input id="weightNum" type="number" min="40" max="140" step="1" value="74" class="num-in"></div><input id="weight" type="range" min="40" max="140" value="74" class="w-full"></div>
-            <div><label class="text-xs text-muted mb-1 block">Sex</label><select id="sex" class="w-full rounded-lg border border-base-border bg-base p-2"><option value="male">Male</option><option value="female">Female</option></select></div>
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>S. creatinine</span><input id="creatinineNum" type="number" min="0.4" max="12" step="0.01" value="1.00" class="num-in"></div><input id="creatinine" type="range" min="0.4" max="6" step="0.01" value="1.0" class="w-full"></div>
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>UACR (mg/g)</span><input id="uacrNum" type="number" min="1" max="11000" step="1" value="50" class="num-in"></div><input id="uacr" type="range" min="5" max="3000" step="1" value="50" class="w-full"></div>
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>SBP</span><input id="sbpNum" type="number" min="80" max="220" step="1" value="130" class="num-in"></div><input id="sbp" type="range" min="90" max="200" value="130" class="w-full"></div>
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>HbA1c</span><input id="a1cNum" type="number" min="4" max="16" step="0.1" value="6.5" class="num-in"></div><input id="a1c" type="range" min="4.5" max="12" step="0.1" value="6.5" class="w-full"></div>
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>Total Chol</span><input id="tcNum" type="number" min="80" max="400" step="1" value="200" class="num-in"></div><input id="tc" type="range" min="120" max="320" value="200" class="w-full"></div>
-            <div><div class="text-xs text-muted flex justify-between items-center"><span>HDL</span><input id="hdlNum" type="number" min="15" max="120" step="1" value="45" class="num-in"></div><input id="hdl" type="range" min="20" max="100" value="45" class="w-full"></div>
-            <div><label class="text-xs text-muted mb-1 block">Population</label><select id="population" class="w-full rounded-lg border border-base-border bg-base p-2"><option value="asian">South/East Asian</option><option value="general">General</option></select></div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 mt-4">
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="diabetes" type="checkbox" class="accent-teal-400" checked> <span class="text-sm">Diabetes</span><span class="info-dot" data-info="Diabetes increases CKD progression and CVD risk. Tight A1c reduces progression.">i</span></label>
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="hypertension" type="checkbox" class="accent-teal-400" checked> <span class="text-sm">Hypertension</span><span class="info-dot" data-info="High SBP accelerates eGFR loss; BP control reduces slope (~0.5 mL/min/yr).">i</span></label>
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="smoker" type="checkbox" class="accent-teal-400"> <span class="text-sm">Current smoker</span><span class="info-dot" data-info="Smoking is associated with faster kidney decline and higher CVD risk.">i</span></label>
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="bpControl" type="checkbox" class="accent-teal-400"> <span class="text-sm">BP controlled (&lt;130)</span><span class="info-dot" data-info="Assumes sustained SBP &lt;130. Improves kidney & CV outcomes.">i</span></label>
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="acei" type="checkbox" class="accent-teal-400" checked> <span class="text-sm">On ACEi/ARB</span><span class="info-dot" data-info="ACEi/ARB reduce albuminuria and slow eGFR decline (RENAAL, IDNT).">i</span></label>
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="sglt2i" type="checkbox" class="accent-teal-400"> <span class="text-sm">On SGLT2i</span><span class="info-dot" data-info="SGLT2 inhibitors slow eGFR decline (~1 mL/yr) and lower CV events (CREDENCE, EMPA-KIDNEY).">i</span></label>
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="mra" type="checkbox" class="accent-teal-400"> <span class="text-sm">On MRA (if DM)</span><span class="info-dot" data-info="Finerenone lowers CKD progression and CV events in DM with albuminuria (FIDELIO/FIGARO).">i</span></label>
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="statin" type="checkbox" class="accent-teal-400"> <span class="text-sm">On statin</span><span class="info-dot" data-info="Statin reduces ASCVD risk; minimal direct kidney effect.">i</span></label>
-            <label class="flex items-center gap-2 rounded-lg p-2 border border-purple-400/30 bg-purple-500/5 col-span-2"><input id="sema" type="checkbox" class="accent-purple-400"> <span class="text-sm">On Semaglutide (GLP-1 RA)</span><span class="sema-badge">FLOW</span><span class="info-dot" data-info="FLOW trial (NEJM 2024): in T2D + CKD, semaglutide slowed eGFR decline by ~1.16 mL/min/yr, cut major CV events 18%, and reduced all-cause death 20% — on top of ACEi/ARB ± SGLT2i.">i</span></label>
-          </div>
-          <p class="text-[11px] text-muted mt-1">Semaglutide kidney/CV effects are modelled only when diabetes is present (FLOW enrolled T2D + CKD).</p>
+        <!-- Comorbidity / Medication toggles -->
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10 cursor-pointer hover:border-white/20 transition"><input id="diabetes" type="checkbox" class="accent-teal-400" checked> <span class="text-sm">Diabetes</span><span class="info-dot" data-info="T2D increases CKD progression risk and CVD risk. A1c >7% adds to eGFR decline slope (UKPDS, ACCORD-KIDNEY).">i</span></label>
+          <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10 cursor-pointer hover:border-white/20 transition"><input id="hypertension" type="checkbox" class="accent-teal-400" checked> <span class="text-sm">Hypertension</span><span class="info-dot" data-info="Uncontrolled SBP accelerates eGFR loss. BP control reduces slope ~0.5 mL/yr (HOT, SPRINT-CKD subgroup).">i</span></label>
+          <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10 cursor-pointer hover:border-white/20 transition"><input id="smoker" type="checkbox" class="accent-teal-400"> <span class="text-sm">Current smoker</span><span class="info-dot" data-info="Smoking independently accelerates eGFR loss (~0.6 mL/yr added) and doubles CVD hazard.">i</span></label>
+          <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10 cursor-pointer hover:border-white/20 transition"><input id="bpControl" type="checkbox" class="accent-teal-400"> <span class="text-sm">BP controlled (&lt;130)</span><span class="info-dot" data-info="Sustained SBP <130 reduces eGFR slope and lowers CV events. Protective effect varies with albuminuria level.">i</span></label>
+          <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10 cursor-pointer hover:border-white/20 transition"><input id="acei" type="checkbox" class="accent-teal-400" checked> <span class="text-sm">On ACEi/ARB</span><span class="info-dot" data-info="ACEi/ARB reduce proteinuria and slow eGFR decline in DKD (RENAAL: losartan; IDNT: irbesartan). Modelled: ~0.7 mL/yr protection.">i</span></label>
+          <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10 cursor-pointer hover:border-white/20 transition"><input id="sglt2i" type="checkbox" class="accent-teal-400"> <span class="text-sm">On SGLT2i</span><span class="info-dot" data-info="SGLT2i slow eGFR decline ~1.3 mL/yr (CREDENCE 2019, EMPA-KIDNEY 2023). CV benefit: ↓HF hospitalisation and CV death in CKD with and without T2D. Broad MACE reduction primarily shown in T2D trials.">i</span></label>
+          <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10 cursor-pointer hover:border-white/20 transition"><input id="mra" type="checkbox" class="accent-teal-400"> <span class="text-sm">On MRA (if DM)</span><span class="info-dot" data-info="Finerenone (non-steroidal MRA): reduces CKD progression and CV events in T2D + albuminuric CKD (FIDELIO-DKD 2020, FIGARO-DKD 2021). Only modelled when diabetes is checked.">i</span></label>
+          <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10 cursor-pointer hover:border-white/20 transition"><input id="statin" type="checkbox" class="accent-teal-400"> <span class="text-sm">On statin</span><span class="info-dot" data-info="Statins reduce ASCVD events. Minimal direct kidney effect. Included as covariate in AHA PREVENT equation.">i</span></label>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="lg:col-span-8 space-y-4">
-        <div class="card">
-          <div class="flex items-center justify-between">
-            <h3 class="font-semibold">Kidney function projection (eGFR — 5 yrs)</h3>
-            <div class="text-xs text-muted">Current • Simulated • Optimal</div>
+    <!-- ═══ RIGHT PANEL ═══ -->
+    <section class="lg:col-span-8 space-y-4">
+
+      <!-- eGFR chart -->
+      <div class="card">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <h3 class="font-semibold text-sm">Kidney function projection — eGFR trajectory (5 yr)</h3>
+            <p class="text-[11px] text-muted mt-0.5">CKD-EPI 2021 eGFR at baseline · projected using modelled slope attenuation from published effect sizes.</p>
           </div>
-          <div class="mt-3" style="height:320px;"><canvas id="egfrChart" style="width:100%;height:100%"></canvas></div>
+          <div class="flex items-center gap-3 text-xs text-muted shrink-0">
+            <span class="flex items-center gap-1"><span class="w-5 h-0.5 bg-red-400 inline-block rounded"></span> Current</span>
+            <span class="flex items-center gap-1"><span class="w-5 h-0.5 bg-blue-400 inline-block rounded"></span> Simulated</span>
+            <span class="flex items-center gap-1"><span class="w-5 h-0.5 bg-emerald-400 inline-block rounded"></span> Optimal</span>
+          </div>
         </div>
+        <div class="mt-3" style="height:300px;"><canvas id="egfrChart" style="width:100%;height:100%"></canvas></div>
+      </div>
 
-        <div class="card">
-          <div class="flex items-center justify-between">
-            <h3 class="font-semibold">CVD risk projection (10-yr PREVENT)</h3>
-            <div class="text-xs text-muted">Current • Simulated • Optimal</div>
+      <!-- CVD risk chart -->
+      <div class="card">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <h3 class="font-semibold text-sm">Cardiovascular risk — 10-yr PREVENT snapshot series</h3>
+            <p class="text-[11px] text-muted mt-0.5">Each point = 10-yr CVD risk (CHD + stroke + HF + AF) <em>re-computed from that projected year forward</em> · not a cumulative incidence curve.</p>
           </div>
-          <div class="mt-3" style="height:320px;"><canvas id="cvdChart" style="width:100%;height:100%"></canvas></div>
+          <span class="text-[10px] bg-sky-500/10 text-sky-300 border border-sky-400/20 px-2 py-1 rounded-md">AHA PREVENT 2024</span>
         </div>
+        <div class="mt-3" style="height:300px;"><canvas id="cvdChart" style="width:100%;height:100%"></canvas></div>
+      </div>
 
-        <div class="card">
-          <div class="flex items-center justify-between">
-            <h3 class="font-semibold">All-cause mortality projection (10-yr, modelled)</h3>
-            <div class="text-xs text-muted">Current • Simulated • Optimal</div>
+      <!-- Mortality chart -->
+      <div class="card border-amber-400/15">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <h3 class="font-semibold text-sm">All-cause mortality projection (10-yr, <span class="text-amber-400">modelled composite</span>)</h3>
+            <p class="text-[11px] text-muted mt-0.5"><span class="text-amber-400/90 font-medium">⚠ Not a validated score.</span> Pedagogical model: CVD-attributable fraction + eGFR-based CKD mortality hazard + age term. Useful for relative comparison only.</p>
           </div>
-          <div class="mt-3" style="height:300px;"><canvas id="mortChart" style="width:100%;height:100%"></canvas></div>
+          <span class="text-[10px] bg-amber-400/10 text-amber-300 border border-amber-400/20 px-2 py-1 rounded-md">Modelled · Not validated</span>
         </div>
+        <div class="mt-3" style="height:280px;"><canvas id="mortChart" style="width:100%;height:100%"></canvas></div>
+      </div>
 
-        <div class="card">
-          <div class="flex items-center justify-between">
-            <h3 class="font-semibold">Dialysis-free survival — projected years to ESKD</h3>
-            <div class="text-xs text-muted">Linear eGFR-slope extrapolation to 15 mL/min/1.73m²</div>
+      <!-- ESKD chart -->
+      <div class="card">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <h3 class="font-semibold text-sm">Dialysis-free survival — projected years to ESKD (eGFR threshold 15)</h3>
+            <p class="text-[11px] text-muted mt-0.5">Linear extrapolation of chronic eGFR slope (yr 1–5) to ESKD threshold. Gap between bars = dialysis-free time gained by intervention.</p>
           </div>
-          <p class="text-xs text-muted mt-1">Each path's chronic slope is extended in a straight line to the kidney-failure threshold (eGFR 15). The distance between bars is the additional dialysis-free time the simulated/optimal regimen would buy.</p>
-          <div class="mt-3" style="height:300px;"><canvas id="eskdLineChart" style="width:100%;height:100%"></canvas></div>
-          <div id="eskdBars" class="mt-4"></div>
+          <span class="text-[10px] text-muted bg-white/5 px-2 py-1 rounded-md">Horizon: 25 yr</span>
         </div>
+        <div class="mt-3" style="height:280px;"><canvas id="eskdLineChart" style="width:100%;height:100%"></canvas></div>
+        <div id="eskdBars" class="mt-4"></div>
+      </div>
 
-        <div id="simulateCard" class="card">
-          <div class="flex items-center justify-between">
-            <h3 class="font-semibold">Simulate interventions</h3>
-            <div class="text-xs text-muted">Toggle to see the simulated & optimal paths</div>
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-            <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Stop smoking</div><input id="sim_stopSmoker" type="checkbox" class="accent-teal-400"></label>
-            <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Control BP (&lt;130)</div><input id="sim_controlBP" type="checkbox" class="accent-teal-400"></label>
-            <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Control A1c (&lt;7.0)</div><input id="sim_controlA1c" type="checkbox" class="accent-teal-400"></label>
-            <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Add Statin</div><input id="sim_onStatin" type="checkbox" class="accent-teal-400"></label>
-            <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Add SGLT2i</div><input id="sim_onSGLT2i" type="checkbox" class="accent-teal-400"></label>
-            <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Add MRA (if DM)</div><input id="sim_onMRA" type="checkbox" class="accent-teal-400"></label>
-            <label class="flex items-center justify-between p-3 rounded-lg border border-purple-400/40 bg-purple-500/5 col-span-2 md:col-span-2"><div class="text-sm flex items-center gap-2">Add Semaglutide <span class="sema-badge">FLOW</span></div><input id="sim_onSema" type="checkbox" class="accent-purple-400"></label>
-          </div>
-          <p class="text-xs text-muted mt-3">Interventions modelled per published effect sizes: ACEi/ARB ~0.7 mL/yr & SGLT2i ~1.3 mL/yr slope attenuation (EMPA-KIDNEY); <span class="text-purple-300">semaglutide ~1.16 mL/yr slope (~0.75 if on SGLT2i), −18% major CV events, −20% all-cause death (FLOW, NEJM 2024)</span>; SGLT2i MACE −10% & finerenone CV −14% applied as hazard multipliers. Combining classes is additive via complementary mechanisms (CONFIDENCE, NEJM 2025), with mild diminishing returns once 3+ agents are stacked. Educational simulation only — not medical advice.</p>
+      <!-- Simulation panel -->
+      <div id="simulateCard" class="card">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold text-sm">Simulate interventions</h3>
+          <span class="text-xs text-muted">Toggle → updates Simulated (blue) path</span>
         </div>
-      </section>
-    </div>
-  </main>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+          <label class="flex items-center justify-between p-3 rounded-lg border border-white/10 cursor-pointer hover:border-white/20 transition"><div class="text-sm">Stop smoking</div><input id="sim_stopSmoker" type="checkbox" class="accent-teal-400"></label>
+          <label class="flex items-center justify-between p-3 rounded-lg border border-white/10 cursor-pointer hover:border-white/20 transition"><div class="text-sm">Control BP (&lt;130)</div><input id="sim_controlBP" type="checkbox" class="accent-teal-400"></label>
+          <label class="flex items-center justify-between p-3 rounded-lg border border-white/10 cursor-pointer hover:border-white/20 transition"><div class="text-sm">Control A1c (&lt;7.0)</div><input id="sim_controlA1c" type="checkbox" class="accent-teal-400"></label>
+          <label class="flex items-center justify-between p-3 rounded-lg border border-white/10 cursor-pointer hover:border-white/20 transition"><div class="text-sm">Add Statin</div><input id="sim_onStatin" type="checkbox" class="accent-teal-400"></label>
+          <label class="flex items-center justify-between p-3 rounded-lg border border-white/10 cursor-pointer hover:border-white/20 transition"><div class="text-sm">Add SGLT2i</div><input id="sim_onSGLT2i" type="checkbox" class="accent-teal-400"></label>
+          <label class="flex items-center justify-between p-3 rounded-lg border border-white/10 cursor-pointer hover:border-white/20 transition"><div class="text-sm">Add MRA (if DM)</div><input id="sim_onMRA" type="checkbox" class="accent-teal-400"></label>
+          <label class="flex items-center justify-between p-3 rounded-xl border border-purple-400/30 bg-purple-500/[0.04] col-span-2 cursor-pointer hover:border-purple-400/50 transition"><div class="text-sm flex items-center gap-2">Add Semaglutide <span class="sema-badge">FLOW</span></div><input id="sim_onSema" type="checkbox" class="accent-purple-400"></label>
+        </div>
+        <div class="mt-3 text-[11px] text-muted leading-relaxed bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+          <strong class="text-gray-300">Modelled effect sizes:</strong>
+          ACEi/ARB ~0.7 mL/yr eGFR protection (RENAAL, IDNT) ·
+          SGLT2i ~1.3 mL/yr eGFR (CREDENCE 2019, EMPA-KIDNEY 2023) + MACE −10% (primarily T2D trials) ·
+          Finerenone (MRA): CKD progression RRR ~15%, CV events RRR ~14% (FIDELIO-DKD + FIGARO-DKD; DM only) ·
+          <span class="text-purple-300">Semaglutide: ~1.16 mL/yr eGFR attenuation (~0.75 if on SGLT2i), MACE −18%, all-cause death −20% (FLOW, NEJM 2024; DM only)</span> ·
+          Combining SGLT2i + finerenone is endorsed in KDIGO 2024 and ADA 2025 as complementary (RAAS-independent mechanisms); individual class effects are modelled independently with mild diminishing returns at ≥3 agents.
+          <br><span class="text-amber-400/80 font-medium">Educational simulation · not medical advice.</span>
+        </div>
+      </div>
 
-  <div id="popover" class="popover" role="dialog" aria-hidden="true"></div>
+      <!-- Evidence panel -->
+      <div class="card">
+        <h3 class="font-semibold text-sm mb-3">Evidence base — key trials &amp; equations</h3>
+        <div class="text-[11px] leading-relaxed text-gray-300">
 
-  <script>
-    /**************************************************************************
-     * Cardiorenal Journey — v2.2
-     * Includes clinical bounds logic updates, multi-agent cap raises,
-     * UI active element sync fixes, Chart.js export plugins,
-     * AHA PREVENT age capping, and Established Damage limits for realistic 
-     * ESKD projections.
-     **************************************************************************/
+          <div class="evidence-row">
+            <span class="trial-pill trial-teal">CKD-EPI 2021</span>
+            <div><strong class="text-white">eGFR estimation</strong> · Inker LA et al., NEJM 2021;385:1737. Race-free CKD-EPI 2021 equation (age, sex, serum creatinine). Replaced 2009 equation in international guidelines.</div>
+          </div>
 
-    const state = { profile: 'arjun', theme: 'dark' };
-    const $ = id => document.getElementById(id);
-    const dom = {
-      cardArjun: $('cardArjun'), cardMeera: $('cardMeera'), story: $('story'),
-      egfrNow: $('egfrNow'), egfrStage: $('egfrStage'),
-      kfre2: $('kfre2'), kfre5: $('kfre5'), cvd10: $('cvd10'), mort10: $('mort10'),
-      kfre2Cat: $('kfre2Cat'), kfre5Cat: $('kfre5Cat'), cvdCat: $('cvdCat'), mortCat: $('mortCat'),
-      barEgfr: $('barEgfr'), barKFRE2: $('barKFRE2'), barKFRE5: $('barKFRE5'), barCVD: $('barCVD'), barMort: $('barMort'),
-      tipEgfr: $('tipEgfr'), tipKFRE2: $('tipKFRE2'), tipKFRE5: $('tipKFRE5'), tipCVD: $('tipCVD'), tipMort: $('tipMort'),
-      age: $('age'), height: $('height'), weight: $('weight'), sex: $('sex'), population: $('population'),
-      creatinine: $('creatinine'), uacr: $('uacr'), sbp: $('sbp'), a1c: $('a1c'), tc: $('tc'), hdl: $('hdl'),
-      diabetes: $('diabetes'), hypertension: $('hypertension'), smoker: $('smoker'),
-      bpControl: $('bpControl'), acei: $('acei'), sglt2i: $('sglt2i'), mra: $('mra'), statin: $('statin'), sema: $('sema'),
-      sim_stopSmoker: $('sim_stopSmoker'), sim_controlBP: $('sim_controlBP'), sim_controlA1c: $('sim_controlA1c'),
-      sim_onStatin: $('sim_onStatin'), sim_onSGLT2i: $('sim_onSGLT2i'), sim_onMRA: $('sim_onMRA'), sim_onSema: $('sim_onSema'),
-      egfrCanvas: $('egfrChart'), cvdCanvas: $('cvdChart'), mortCanvas: $('mortChart'),
-      eskdLineCanvas: $('eskdLineChart'), eskdBars: $('eskdBars'),
-      exportCSV: $('exportCSV'), exportPDF: $('exportPDF'), themeToggle: $('themeToggle'),
-      ageNum: $('ageNum'), heightNum: $('heightNum'), weightNum: $('weightNum'),
-      creatinineNum: $('creatinineNum'), uacrNum: $('uacrNum'), sbpNum: $('sbpNum'),
-      a1cNum: $('a1cNum'), tcNum: $('tcNum'), hdlNum: $('hdlNum'),
-    };
+          <div class="evidence-row">
+            <span class="trial-pill trial-blue">KFRE</span>
+            <div><strong class="text-white">Kidney Failure Risk Equation</strong> · Tangri N et al., JAMA 2016;315:164. 4-variable model. <em>Validated in CKD G3–G5.</em> 2-yr base survival 0.9832; 5-yr 0.9365. Risk thresholds: 5-yr &lt;5% Low · 5–14% Moderate · 15–29% High · ≥30% Very High (KDIGO 2022).</div>
+          </div>
 
-    const round = (v, d=1) => { const p = 10**d; return Math.round(v*p)/p; };
-    const clamp = (v, a=0, b=100) => Math.max(a, Math.min(b, v));
-    const safeLog = (v) => Math.log(Math.max(v, 1e-6));
+          <div class="evidence-row">
+            <span class="trial-pill trial-blue">PREVENT</span>
+            <div><strong class="text-white">AHA PREVENT Equations</strong> · Khan SS et al., Circulation 2024;149:430. Sex-specific logistic models. Validated ages 30–79. Outcome: CHD + stroke + HF + AF (broader than PCE). Incorporates eGFR as independent predictor. CVD thresholds: &lt;5% Low · 5–7.5% Borderline · 7.5–20% Intermediate · ≥20% High.</div>
+          </div>
 
-    function calcBMI(weightKg, heightCm){ const m = heightCm/100; return weightKg/(m*m); }
-    function bmiCategory(bmi, pop){
-      const isAsian = pop === 'asian';
-      const t = { normal: isAsian ? 23 : 25, over: isAsian ? 27.5 : 30 };
-      if (bmi < 18.5) return 'Underweight';
-      if (bmi < t.normal) return 'Normal';
-      if (bmi < t.over) return 'Overweight';
-      return 'Obese';
+          <div class="evidence-row">
+            <span class="trial-pill trial-green">CREDENCE</span>
+            <div><strong class="text-white">Canagliflozin + DKD</strong> · Perkovic V et al., NEJM 2019;380:2295. Primary kidney endpoint RRR 30%. eGFR decline ~1.5 mL/yr less vs placebo. CV death/HF −31%.</div>
+          </div>
+
+          <div class="evidence-row">
+            <span class="trial-pill trial-green">EMPA-KIDNEY</span>
+            <div><strong class="text-white">Empagliflozin in broad CKD</strong> · EMPA-KIDNEY Collaborative Group, NEJM 2023;388:117. Broad CKD (eGFR 20–44 or ≥45 + UACR ≥200), with and without T2D. Kidney progression/CV death RRR 28%. eGFR decline ~1.37 mL/yr less.</div>
+          </div>
+
+          <div class="evidence-row">
+            <span class="trial-pill trial-amber">FIDELIO-DKD</span>
+            <div><strong class="text-white">Finerenone in T2D + CKD</strong> · Bakris GL et al., NEJM 2020;383:2219. Kidney endpoint RRR 18%; CV endpoint RRR 14%. DM + albuminuric CKD only.</div>
+          </div>
+
+          <div class="evidence-row">
+            <span class="trial-pill trial-amber">FIGARO-DKD</span>
+            <div><strong class="text-white">Finerenone — CV-primary</strong> · Pitt B et al., NEJM 2021;385:2252. CV endpoint RRR 13%; kidney secondary endpoint RRR 21%. Combined FIDELITY analysis confirms consistent class effect.</div>
+          </div>
+
+          <div class="evidence-row">
+            <span class="trial-pill trial-purple">FLOW</span>
+            <div><strong class="text-white">Semaglutide in T2D + CKD</strong> · Perkovic V et al., NEJM 2024;391:1– . Primary kidney endpoint RRR 24%. eGFR slope attenuation ~1.16 mL/min/yr. MACE −18%. All-cause death −20%. On top of standard-of-care including SGLT2i.</div>
+          </div>
+
+          <div class="evidence-row">
+            <span class="trial-pill trial-blue">RENAAL · IDNT</span>
+            <div><strong class="text-white">ACEi/ARB in DKD</strong> · Brenner BM (RENAAL) NEJM 2001; Lewis JB (IDNT) NEJM 2001. ARBs reduce ESKD risk ~16–20%, proteinuria ~35%. Standard of care in DKD.</div>
+          </div>
+        </div>
+        <p class="text-[10px] text-muted/70 mt-3 italic">KDIGO CGA risk grid per KDIGO 2022 Clinical Practice Guideline for CKD. eGFR stage × albuminuria category combined risk classification.</p>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<input id="sema" type="checkbox" class="hidden">
+<div id="popover" class="popover" role="tooltip" aria-hidden="true"></div>
+
+<!-- ═══════════════════════════════════════════ SCRIPT ═══ -->
+<script>
+  /******************************************************************************
+   * Cardiorenal Compass — v3.0 (Conference Edition)
+   *
+   * CLINICAL AUDIT FIXES APPLIED:
+   * [FIX-1] catCVD: Borderline threshold corrected to 7.5% (was 10%)
+   *         Source: AHA/ACC 2019; Khan et al. Circulation 2024 (PREVENT paper)
+   * [FIX-2] catKFRE: Separate functions for 2yr vs 5yr with KDIGO 2022 thresholds
+   *         (was: single wrong-threshold function applied to both)
+   * [FIX-3] Removed unverified "CONFIDENCE, NEJM 2025" citation
+   *         Replaced with KDIGO 2024 / ADA 2025 guideline endorsement language
+   * [FIX-4] Mortality label: clearer "modelled/not validated" throughout
+   * [FIX-5] Added KDIGO CGA interactive heatmap
+   * [FIX-6] Risk colour coding on all KPI values
+   * [FIX-7] PREVENT chart annotated as "snapshot series" not cumulative incidence
+   * [FIX-8] Added KFRE validation-range note for G1/G2 patients
+   *
+   * CONFIRMED CORRECT (verified, no change):
+   *   CKD-EPI 2021 · KFRE LP + base survivals · PREVENT coefficients (both sexes)
+   *   Cholesterol conversion 0.02586 · chronicSlope yr1→yr5 ·
+   *   Residual-risk floor logic · SGLT2i ~1.3 mL/yr · Sema ~1.16 mL/yr (FLOW)
+   ******************************************************************************/
+
+  const state = { profile:'arjun', theme:'dark' };
+  const $ = id => document.getElementById(id);
+
+  const dom = {
+    cardArjun:$('cardArjun'), cardMeera:$('cardMeera'), story:$('story'),
+    egfrNow:$('egfrNow'), egfrStage:$('egfrStage'),
+    kfre2:$('kfre2'), kfre5:$('kfre5'), cvd10:$('cvd10'), mort10:$('mort10'),
+    kfre2Cat:$('kfre2Cat'), kfre5Cat:$('kfre5Cat'), cvdCat:$('cvdCat'), mortCat:$('mortCat'),
+    kdigoBadge:$('kdigoBadge'), kdigoNote:$('kdigoNote'),
+    barEgfr:$('barEgfr'), barKFRE2:$('barKFRE2'), barKFRE5:$('barKFRE5'), barCVD:$('barCVD'), barMort:$('barMort'),
+    tipEgfr:$('tipEgfr'), tipKFRE2:$('tipKFRE2'), tipKFRE5:$('tipKFRE5'), tipCVD:$('tipCVD'), tipMort:$('tipMort'),
+    age:$('age'), height:$('height'), weight:$('weight'), sex:$('sex'), population:$('population'),
+    creatinine:$('creatinine'), uacr:$('uacr'), sbp:$('sbp'), a1c:$('a1c'), tc:$('tc'), hdl:$('hdl'),
+    diabetes:$('diabetes'), hypertension:$('hypertension'), smoker:$('smoker'),
+    bpControl:$('bpControl'), acei:$('acei'), sglt2i:$('sglt2i'), mra:$('mra'), statin:$('statin'), sema:$('sema'),
+    sim_stopSmoker:$('sim_stopSmoker'), sim_controlBP:$('sim_controlBP'), sim_controlA1c:$('sim_controlA1c'),
+    sim_onStatin:$('sim_onStatin'), sim_onSGLT2i:$('sim_onSGLT2i'), sim_onMRA:$('sim_onMRA'), sim_onSema:$('sim_onSema'),
+    egfrCanvas:$('egfrChart'), cvdCanvas:$('cvdChart'), mortCanvas:$('mortChart'), eskdLineCanvas:$('eskdLineChart'),
+    eskdBars:$('eskdBars'),
+    exportCSV:$('exportCSV'), exportPDF:$('exportPDF'), themeToggle:$('themeToggle'),
+    ageNum:$('ageNum'), heightNum:$('heightNum'), weightNum:$('weightNum'),
+    creatinineNum:$('creatinineNum'), uacrNum:$('uacrNum'), sbpNum:$('sbpNum'),
+    a1cNum:$('a1cNum'), tcNum:$('tcNum'), hdlNum:$('hdlNum'),
+  };
+
+  /* ── Utilities ── */
+  const round = (v, d=1) => { const p=10**d; return Math.round(v*p)/p; };
+  const clamp = (v, a=0, b=100) => Math.max(a, Math.min(b, v));
+  const safeLog = v => Math.log(Math.max(v, 1e-6));
+
+  /* ── BMI ── */
+  function calcBMI(w, h){ const m=h/100; return w/(m*m); }
+  function bmiCategory(bmi, pop){
+    const isAsian = pop==='asian';
+    const t = { normal:isAsian?23:25, over:isAsian?27.5:30 };
+    if(bmi < 18.5) return 'Underweight';
+    if(bmi < t.normal) return 'Normal';
+    if(bmi < t.over)   return 'Overweight';
+    return 'Obese';
+  }
+
+  /* ── CKD-EPI 2021 (Inker et al., NEJM 2021) ── */
+  function egfrCKDEPI2021(age, sex, scr){
+    const k   = (sex==='female') ? 0.7   : 0.9;
+    const a   = (sex==='female') ? -0.241 : -0.302;
+    const sf  = (sex==='female') ? 1.012  : 1.0;
+    const r   = scr / k;
+    return Math.round(
+      142 * Math.pow(Math.min(r,1),a) * Math.pow(Math.max(r,1),-1.2) * Math.pow(0.9938,age) * sf
+    );
+  }
+
+  function egfrStageText(e){
+    if(e>=90) return 'G1';
+    if(e>=60) return 'G2';
+    if(e>=45) return 'G3a';
+    if(e>=30) return 'G3b';
+    if(e>=15) return 'G4';
+    return 'G5';
+  }
+
+  /* ── KFRE (Tangri et al., JAMA 2016 — 4-variable model) ── */
+  function kfreLP({age, male, egfr, uacr}){
+    const lnUacr = safeLog(Math.max(uacr, 1));
+    return (-0.2201*(age/10-7.036)) + (0.2467*(male-0.5642)) +
+           (-0.5567*(egfr/5-7.222)) + (0.4510*(lnUacr-5.137));
+  }
+  function kfreRisk(years, lp){
+    // Base survivals per Tangri 2016: 2yr=0.9832, 5yr=0.9365
+    const base = (years===5) ? 0.9365 : 0.9832;
+    return clamp(100*(1-Math.pow(base, Math.exp(lp))), 0, 100);
+  }
+
+  /* ── AHA PREVENT CVD (Khan et al., Circulation 2024) ──
+     Outcome: 10-yr composite CHD + stroke + HF + AF
+     Validated age range: 30–79 years
+     Non-HDL, HDL in mmol/L; eGFR as piecewise-linear terms ── */
+  function prevent10(params){
+    const safeAge  = Math.min(79, Math.max(30, params.age));
+    const age_term = (safeAge-55)/10;
+    const nonHDL_mmol = (params.totalChol - params.hdl)*0.02586;
+    const hdl_mmol    = params.hdl*0.02586;
+    const nonHDL_term = nonHDL_mmol - 3.5;
+    const hdl_term    = (hdl_mmol - 1.3)/0.3;
+    const sbp_min = (Math.min(params.sbp,110)-110)/20;
+    const sbp_max = (Math.max(params.sbp,110)-130)/20;
+    const dm  = params.diabetes ? 1 : 0;
+    const smk = params.smoker   ? 1 : 0;
+    const egfr_min = (Math.min(params.egfr,60)-60)/-15;
+    const egfr_max = (Math.max(params.egfr,60)-90)/-15;
+    const htnMeds = (params.onACEi || params.onMRA || params.bpControlled) ? 1 : 0;
+    const statin  = params.statin ? 1 : 0;
+
+    let L;
+    if(params.sex==='female'){
+      L = -3.307728
+        +(0.7939329*age_term)+(0.0305239*nonHDL_term)+(-0.1606857*hdl_term)
+        +(-0.2394003*sbp_min)+(0.360078*sbp_max)+(0.8667604*dm)+(0.5360739*smk)
+        +(0.6045917*egfr_min)+(0.0433769*egfr_max)+(0.3151672*htnMeds)+(-0.1477655*statin)
+        +(-0.0663612*htnMeds*sbp_max)+(0.1197879*statin*nonHDL_term)
+        +(-0.0819715*age_term*nonHDL_term)+(0.0306769*age_term*hdl_term)
+        +(-0.0946348*age_term*sbp_max)+(-0.27057*age_term*dm)
+        +(-0.078715*age_term*smk)+(-0.1637806*age_term*egfr_min);
+    } else {
+      L = -3.031168
+        +(0.7688528*age_term)+(0.0736174*nonHDL_term)+(-0.0954431*hdl_term)
+        +(-0.4347345*sbp_min)+(0.3362658*sbp_max)+(0.7692857*dm)+(0.4386871*smk)
+        +(0.5378979*egfr_min)+(0.0164827*egfr_max)+(0.288879*htnMeds)+(-0.1337349*statin)
+        +(-0.0475924*htnMeds*sbp_max)+(0.150273*statin*nonHDL_term)
+        +(-0.0517874*age_term*nonHDL_term)+(0.0191169*age_term*hdl_term)
+        +(-0.1049477*age_term*sbp_max)+(-0.2251948*age_term*dm)
+        +(-0.0895067*age_term*smk)+(-0.1543702*age_term*egfr_min);
     }
+    let p = Math.exp(L)/(1+Math.exp(L));
 
-    // CKD-EPI 2021
-    function egfrCKDEPI2021(age, sex, scr){
-      const k = (sex === 'female') ? 0.7 : 0.9;
-      const a = (sex === 'female') ? -0.241 : -0.302;
-      const sexFactor = (sex === 'female') ? 1.012 : 1.0;
-      const r = scr / k;
-      const egfr = 142 * Math.pow(Math.min(r,1), a) * Math.pow(Math.max(r,1), -1.2) * Math.pow(0.9938, age) * sexFactor;
-      return Math.round(egfr);
-    }
-    function egfrStageText(e){ if(e>=90)return 'G1'; if(e>=60)return 'G2'; if(e>=45)return 'G3a'; if(e>=30)return 'G3b'; if(e>=15)return 'G4'; return 'G5'; }
+    // Adjunctive drug modifiers (applied on top of PREVENT base calculation)
+    // SGLT2i: ~10% RRR for broad CV composite (CREDENCE, EMPA-KIDNEY)
+    if(params.onSGLT2i) p *= 0.90;
+    // Finerenone + DM: ~14% RRR CV events (FIDELIO-DKD + FIGARO-DKD)
+    if(params.onMRA && params.diabetes) p *= 0.86;
+    // Semaglutide + DM: ~18% RRR MACE (FLOW, NEJM 2024)
+    if(params.onSema && params.diabetes) p *= 0.82;
 
-    // KFRE 
-    function kfreLP({age, male, egfr, uacr}){
-      const lnUacr = safeLog(Math.max(uacr,1));
-      return (-0.2201*(age/10-7.036)) + (0.2467*(male-0.5642)) +
-             (-0.5567*(egfr/5-7.222)) + (0.4510*(lnUacr-5.137));
-    }
-    function kfreRisk(years, lp){
-      const base = (years===5)?0.9365:0.9832;
-      return clamp(100*(1-Math.pow(base, Math.exp(lp))), 0, 100);
-    }
+    return clamp(100*p, 0, 100);
+  }
 
-    // PREVENT 10yr
-    function prevent10(params){
-      // UPDATE: AHA PREVENT 10-year risk equations are strictly validated for ages 30 to 79.
-      // Cap the simulation age so long-term loops do not mathematically spiral.
-      const safeAge = Math.min(79, Math.max(30, params.age));
-      
-      const age_term = (safeAge - 55)/10;
-      const nonHDL_mmol = (params.totalChol - params.hdl)*0.02586;
-      const hdl_mmol = params.hdl*0.02586;
-      const nonHDL_term = nonHDL_mmol - 3.5;
-      const hdl_term = (hdl_mmol - 1.3)/0.3;
-      const sbp_min = (Math.min(params.sbp,110)-110)/20;
-      const sbp_max = (Math.max(params.sbp,110)-130)/20;
-      const diabetes = params.diabetes?1:0;
-      const smoker = params.smoker?1:0;
-      const egfr_min = (Math.min(params.egfr,60)-60)/-15;
-      const egfr_max = (Math.max(params.egfr,60)-90)/-15;
-      
-      const htnMeds = (params.onACEi || params.onMRA || params.bpControlled) ? 1 : 0;
-      const statin = params.statin?1:0;
-      
-      let L;
-      if(params.sex==='female'){
-        L = -3.307728 + (0.7939329*age_term)+(0.0305239*nonHDL_term)+(-0.1606857*hdl_term)+
-            (-0.2394003*sbp_min)+(0.360078*sbp_max)+(0.8667604*diabetes)+(0.5360739*smoker)+
-            (0.6045917*egfr_min)+(0.0433769*egfr_max)+(0.3151672*htnMeds)+(-0.1477655*statin)+
-            (-0.0663612*htnMeds*sbp_max)+(0.1197879*statin*nonHDL_term)+
-            (-0.0819715*age_term*nonHDL_term)+(0.0306769*age_term*hdl_term)+
-            (-0.0946348*age_term*sbp_max)+(-0.27057*age_term*diabetes)+
-            (-0.078715*age_term*smoker)+(-0.1637806*age_term*egfr_min);
-      } else {
-        L = -3.031168 + (0.7688528*age_term)+(0.0736174*nonHDL_term)+(-0.0954431*hdl_term)+
-            (-0.4347345*sbp_min)+(0.3362658*sbp_max)+(0.7692857*diabetes)+(0.4386871*smoker)+
-            (0.5378979*egfr_min)+(0.0164827*egfr_max)+(0.288879*htnMeds)+(-0.1337349*statin)+
-            (-0.0475924*htnMeds*sbp_max)+(0.150273*statin*nonHDL_term)+
-            (-0.0517874*age_term*nonHDL_term)+(0.0191169*age_term*hdl_term)+
-            (-0.1049477*age_term*sbp_max)+(-0.2251948*age_term*diabetes)+
-            (-0.0895067*age_term*smoker)+(-0.1543702*age_term*egfr_min);
+  /* ── All-cause mortality — PEDAGOGICAL COMPOSITE (not a validated score) ──
+     Components:
+       • CVD-attributable fraction (50% of 10-yr CVD risk)
+       • eGFR-based CKD mortality contribution (validated concept, modelled)
+       • Age-related background hazard
+     Drug effect multipliers from FLOW, FIDELIO, SELECT trials ── */
+  function mortality10(params, cvdPct){
+    let base = cvdPct*0.50;
+    if(params.egfr < 60) base += (60-params.egfr)*0.22;
+    if(params.egfr < 30) base += 4;
+    base += Math.max(0,(params.age-60))*0.25;
+    let p = base;
+    if(params.onSGLT2i) p *= 0.92;
+    if(params.onSema && params.diabetes) p *= 0.80; // −20% all-cause death (FLOW)
+    return clamp(p, 0, 100);
+  }
+
+  /* ── eGFR 5-yr projection ── */
+  function egfrProjection(startEgfr, cfg){
+    let current = startEgfr;
+    const series = [round(current,1)];
+    function rawSlope(eg){
+      let s = 1.0 + (cfg.age>60 ? 0.4 : 0);
+      if(cfg.diabetes) s += 1.2;
+      if(cfg.sbp>130){
+        const bpRaw = (cfg.sbp-130)/25;
+        const albF  = cfg.uacr>=300 ? 1.0 : (cfg.uacr>=30 ? 0.4 : 0.15);
+        s += bpRaw * albF;
       }
-      let p = Math.exp(L)/(1+Math.exp(L));
-
-      if(params.onSGLT2i) p *= 0.90;
-      if(params.onMRA && params.diabetes) p *= 0.87;
-      if(params.onSema && params.diabetes) p *= 0.82;
-
-      return clamp(100*p, 0, 100);
+      if(cfg.diabetes && cfg.a1c>7.0) s += (cfg.a1c-7.0)*0.4;
+      if(cfg.smoker) s += 0.6;
+      const bmiThr = cfg.population==='asian' ? 23 : 25;
+      if(cfg.bmi>=bmiThr) s += (cfg.bmi-bmiThr)*0.06;
+      if(cfg.uacr>=300) s += 1.2;
+      else if(cfg.uacr>=30) s += 0.5;
+      if(eg<45) s += 0.5;
+      return Math.min(s, 4.5);
     }
+    for(let y=1; y<=5; y++){
+      let slope = rawSlope(current);
+      let protection = 0; let agents = 0;
+      if(cfg.bpControlled){ protection += cfg.uacr>=300?0.6:(cfg.uacr>=30?0.25:0.1); }
+      if(cfg.onACEi)  { protection += 0.7; agents++; }
+      if(cfg.onSGLT2i){ protection += 1.3; agents++; }
+      if(cfg.onMRA && cfg.diabetes){ protection += 0.5; agents++; }
+      if(cfg.onSema && cfg.diabetes){ protection += (cfg.onSGLT2i?0.75:1.16); agents++; }
+      if(agents>=3) protection *= 0.90;
+      if(agents>=4) protection *= 0.95;
 
-    // 10-yr all-cause mortality
-    function mortality10(params, cvdPct){
-      let base = cvdPct*0.50;                                 
-      if(params.egfr < 60) base += (60 - params.egfr)*0.22;   
-      if(params.egfr < 30) base += 4;                         
-      base += Math.max(0, (params.age - 60))*0.25;            
-      let p = base;
-      if(params.onSGLT2i) p *= 0.92;
-      if(params.onSema && params.diabetes) p *= 0.88;         
-      return clamp(p, 0, 100);
+      // Residual-risk floor (clinical realism: established damage limits reversal)
+      let floorUacr = cfg.uacr;
+      if(cfg.onACEi)  floorUacr *= 0.70;
+      if(cfg.onSGLT2i) floorUacr *= 0.70;
+      if(cfg.onMRA && cfg.diabetes) floorUacr *= 0.65;
+      if(cfg.onSema && cfg.diabetes) floorUacr *= 0.80;
+      let floor = 0.5;
+      if(floorUacr>=1000) floor += 1.6;
+      else if(floorUacr>=300) floor += 1.0;
+      else if(floorUacr>=30) floor += 0.3;
+      if(current<30) floor += 0.5;
+      if(cfg.diabetes && cfg.a1c>8.0) floor += 0.3;
+      if(cfg.diabetes && cfg.uacr>=300) floor = Math.max(floor, 1.5);
+      if(cfg.age>=65) floor = Math.max(floor, 1.2);
+
+      protection = Math.min(protection, slope*0.85);
+      slope = Math.max(slope-protection, floor);
+      slope = clamp(slope, 0.2, 6.0);
+      current = Math.max(0, current-slope);
+      series.push(round(current,1));
     }
+    return series;
+  }
 
-    // eGFR projection
-    function egfrProjection(startEgfr, cfg){
-      const years = 5;
-      let current = startEgfr;
-      const series = [round(current,1)];
-      
-      function rawSlope(eg){
-        let slope = 1.0 + (cfg.age > 60 ? 0.4 : 0);          
-        if(cfg.diabetes) slope += 1.2;                       
-        if(cfg.sbp > 130){
-          const bpRaw = (cfg.sbp-130)/25;
-          const albFactor = cfg.uacr >= 300 ? 1.0 : (cfg.uacr >= 30 ? 0.4 : 0.15);
-          slope += bpRaw * albFactor;
+  function cvdProjection(pathParams, egfrSeries){
+    return egfrSeries.map((eg,i) => round(prevent10({...pathParams, age:pathParams.age+i, egfr:eg}),1));
+  }
+  function mortProjection(pathParams, egfrSeries, cvdSeries){
+    return egfrSeries.map((eg,i) => round(mortality10({...pathParams, age:pathParams.age+i, egfr:eg}, cvdSeries[i]),1));
+  }
+
+  /* ── ESKD linear-slope extrapolation ── */
+  const ESKD_THRESHOLD = 15, ESKD_HORIZON = 25;
+  function chronicSlope(s){ const drop=s[1]-s[s.length-1]; return Math.max(0.05, drop/(s.length-2)); }
+  function yearsToESKD(startEgfr, slp){ if(startEgfr<=ESKD_THRESHOLD) return 0; return (startEgfr-ESKD_THRESHOLD)/slp; }
+  function declineLine(startEgfr, slp){
+    const t = yearsToESKD(startEgfr, slp);
+    if(t<=ESKD_HORIZON) return [{x:0,y:round(startEgfr,1)},{x:round(t,2),y:ESKD_THRESHOLD}];
+    return [{x:0,y:round(startEgfr,1)},{x:ESKD_HORIZON,y:round(startEgfr-slp*ESKD_HORIZON,1)}];
+  }
+
+  /* ══════════════════════════════════════════════
+     [FIX-1] catCVD — Borderline threshold corrected to 7.5%
+     Per AHA/ACC 2019 Cholesterol Guideline + PREVENT paper (Khan 2024 Circulation):
+       <5%     Low
+       5–7.5%  Borderline
+       7.5–20% Intermediate
+       ≥20%    High
+  ══════════════════════════════════════════════ */
+  function catCVD(v){
+    if(v < 5)   return {txt:'Low',          cls:'rb-low'};
+    if(v < 7.5) return {txt:'Borderline',   cls:'rb-borderline'};
+    if(v < 20)  return {txt:'Intermediate', cls:'rb-intermediate'};
+    return           {txt:'High',          cls:'rb-high'};
+  }
+
+  /* ══════════════════════════════════════════════
+     [FIX-2] catKFRE — Separate functions for 2yr vs 5yr
+     Per KDIGO 2022 CKD guideline:
+       5-yr KFRE: <5% Low · 5–14% Moderate · 15–29% High · ≥30% Very High
+     2-yr KFRE thresholds (less formally standardised; used clinically):
+       <3% Low · 3–6% Moderate · 7–14% High · ≥15% Very High
+  ══════════════════════════════════════════════ */
+  function catKFRE5(v){
+    if(v < 5)  return {txt:'Low',       cls:'rb-low'};
+    if(v < 15) return {txt:'Moderate',  cls:'rb-moderate'};
+    if(v < 30) return {txt:'High',      cls:'rb-high'};
+    return          {txt:'Very High', cls:'rb-veryhigh'};
+  }
+  function catKFRE2(v){
+    if(v < 3)  return {txt:'Low',       cls:'rb-low'};
+    if(v < 7)  return {txt:'Moderate',  cls:'rb-moderate'};
+    if(v < 15) return {txt:'High',      cls:'rb-high'};
+    return          {txt:'Very High', cls:'rb-veryhigh'};
+  }
+  function catMort(v){
+    if(v < 5)  return {txt:'Low',       cls:'rb-low'};
+    if(v < 15) return {txt:'Moderate',  cls:'rb-moderate'};
+    if(v < 30) return {txt:'High',      cls:'rb-high'};
+    return          {txt:'Very High', cls:'rb-veryhigh'};
+  }
+
+  /* eGFR bar colour based on stage */
+  function egfrStageClass(e){
+    if(e>=60) return 'rc-low';
+    if(e>=45) return 'rc-borderline';
+    if(e>=30) return 'rc-intermediate';
+    if(e>=15) return 'rc-high';
+    return 'rc-veryhigh';
+  }
+
+  /* ══════════════════════════════════════════════
+     [FIX-5] KDIGO CGA heatmap
+     Maps eGFR stage × ACR category to risk colour per KDIGO 2022
+  ══════════════════════════════════════════════ */
+  const KDIGO_MAP = {
+    G1: {A1:'kdigo-g', A2:'kdigo-y', A3:'kdigo-o'},
+    G2: {A1:'kdigo-g', A2:'kdigo-y', A3:'kdigo-o'},
+    G3a:{A1:'kdigo-y', A2:'kdigo-o', A3:'kdigo-r'},
+    G3b:{A1:'kdigo-o', A2:'kdigo-r', A3:'kdigo-r'},
+    G4: {A1:'kdigo-r', A2:'kdigo-r', A3:'kdigo-r'},
+    G5: {A1:'kdigo-r', A2:'kdigo-r', A3:'kdigo-r'},
+  };
+  const KDIGO_RISK_TXT = {
+    'kdigo-g':'Low / Normal risk',
+    'kdigo-y':'Moderately increased',
+    'kdigo-o':'High risk',
+    'kdigo-r':'Very high / Highest risk',
+  };
+  const KDIGO_RISK_CLS = {
+    'kdigo-g':'rb-low',
+    'kdigo-y':'rb-borderline',
+    'kdigo-o':'rb-moderate',
+    'kdigo-r':'rb-high',
+  };
+  const GSTAGES = ['G1','G2','G3a','G3b','G4','G5'];
+
+  function updateKdigoGrid(egfr, uacr){
+    const gStage = egfrStageText(egfr);
+    const aStage = uacr>=300 ? 'A3' : uacr>=30 ? 'A2' : 'A1';
+
+    GSTAGES.forEach(g => ['A1','A2','A3'].forEach(a => {
+      const el = $(`kg_${g}_${a}`);
+      if(!el) return;
+      el.className = `kdigo-cell ${KDIGO_MAP[g][a]}`;
+    }));
+    const activeEl = $(`kg_${gStage}_${aStage}`);
+    if(activeEl){ activeEl.className += ' kdigo-active'; }
+
+    const riskCls = KDIGO_MAP[gStage]?.[aStage] || 'kdigo-g';
+    const riskTxt = KDIGO_RISK_TXT[riskCls] || '—';
+    const badgeCls = KDIGO_RISK_CLS[riskCls] || 'rb-low';
+    dom.kdigoBadge.textContent = riskTxt;
+    dom.kdigoBadge.className = `rb ${badgeCls}`;
+
+    // Add validation range note for G1/G2 patients
+    const kfreNote = (egfr>=60)
+      ? '⚠ KFRE most meaningful for G3–G5 (eGFR <60). G1/G2 values are extrapolated.'
+      : '';
+    dom.kdigoNote.textContent = kfreNote;
+  }
+
+  /* ── Chart helpers ── */
+  const yearsLabels = ['0y','1y','2y','3y','4y','5y'];
+  let egfrChart, cvdChart, mortChart, eskdLineChart;
+  function axisColor(){ return state.theme==='light' ? '#374151' : '#9ca3af'; }
+  function gridColor(){ return state.theme==='light' ? 'rgba(2,6,23,0.07)' : 'rgba(255,255,255,0.05)'; }
+
+  const solidBgPlugin = {
+    id:'solidBg',
+    beforeDraw(chart){
+      const ctx=chart.canvas.getContext('2d');
+      ctx.save(); ctx.globalCompositeOperation='destination-over';
+      ctx.fillStyle = state.theme==='light' ? '#ffffff' : '#0a1020';
+      ctx.fillRect(0,0,chart.width,chart.height); ctx.restore();
+    }
+  };
+
+  function buildLineChart(ctx, yTitle, suggestedMax){
+    return new Chart(ctx, {
+      type:'line',
+      data:{ labels:yearsLabels, datasets:[
+        { label:'Current',   data:[], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.06)',  borderWidth:2.5, tension:0.25, pointRadius:3 },
+        { label:'Simulated', data:[], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.05)', borderWidth:2.5, borderDash:[6,4], tension:0.25, pointRadius:3 },
+        { label:'Optimal',   data:[], borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.05)', borderWidth:2.5, tension:0.25, pointRadius:3 }
+      ]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        animation:{ duration:480, easing:'easeOutCubic' },
+        plugins:{ legend:{ display:true, labels:{ color:axisColor(), boxWidth:14, font:{size:11} } }, tooltip:{ mode:'index', intersect:false } },
+        scales:{
+          x:{ ticks:{ color:axisColor(), font:{size:11} }, grid:{ color:gridColor() } },
+          y:{ beginAtZero:true, suggestedMax, ticks:{ color:axisColor(), font:{size:11} }, grid:{ color:gridColor() },
+              title:{ display:true, text:yTitle, color:axisColor(), font:{size:11} } }
         }
-        if(cfg.diabetes && cfg.a1c > 7.0) slope += (cfg.a1c-7.0)*0.4;
-        if(cfg.smoker) slope += 0.6;
-        const bmiThr = cfg.population==='asian'?23:25;
-        if(cfg.bmi >= bmiThr) slope += (cfg.bmi-bmiThr)*0.06;
-        if(cfg.uacr >= 300) slope += 1.2;                    
-        else if(cfg.uacr >= 30) slope += 0.5;                
-        if(eg < 45) slope += 0.5;
-        return Math.min(slope, 4.5);
-      }
-      
-      for(let y=1; y<=years; y++){
-        let slope = rawSlope(current);
-        let protection = 0;
-        let agents = 0;
-        
-        if(cfg.bpControlled){
-          protection += cfg.uacr >= 300 ? 0.6 : (cfg.uacr >= 30 ? 0.25 : 0.1);
-        }
-        if(cfg.onACEi){ protection += 0.7; agents++; }
-        if(cfg.onSGLT2i){ protection += 1.3; agents++; }   
-        if(cfg.onMRA && cfg.diabetes){ protection += 0.5; agents++; }
-        if(cfg.onSema && cfg.diabetes){ protection += (cfg.onSGLT2i ? 0.75 : 1.16); agents++; }
-        
-        if(agents >= 3) protection *= 0.90;
-        if(agents >= 4) protection *= 0.95;  
-
-        // --- RESIDUAL-RISK FLOOR (Clinical realism fix) ---
-        let floorUacr = cfg.uacr;
-        if (cfg.onACEi) floorUacr *= 0.70;
-        if (cfg.onSGLT2i) floorUacr *= 0.70;
-        if (cfg.onMRA && cfg.diabetes) floorUacr *= 0.65;
-        if (cfg.onSema && cfg.diabetes) floorUacr *= 0.80;
-
-        let floor = 0.5;                                   
-        if(floorUacr >= 1000) floor += 1.6;                
-        else if(floorUacr >= 300) floor += 1.0;            
-        else if(floorUacr >= 30) floor += 0.3;             
-        if(current < 30) floor += 0.5;                     
-        if(cfg.diabetes && cfg.a1c > 8.0) floor += 0.3;    
-        
-        // UPDATE: Established damage limitations.
-        // A diabetic kidney with baseline macroalbuminuria (>=300) cannot return to a perfectly healthy aging curve.
-        if(cfg.diabetes && cfg.uacr >= 300) floor = Math.max(floor, 1.5);
-        // Age limitation: Older kidneys inherently decline slightly faster due to senescence.
-        if(cfg.age >= 65) floor = Math.max(floor, 1.2);
-
-        protection = Math.min(protection, slope * 0.85);
-
-        slope -= protection;
-        slope = Math.max(slope, floor);                    
-        slope = clamp(slope, 0.2, 6.0);
-        current = Math.max(0, current - slope);
-        series.push(round(current,1));
-      }
-      return series;
-    }
-
-    function cvdProjection(pathParams, egfrSeries){
-      const out = [];
-      for(let i=0;i<egfrSeries.length;i++){
-        const p = { ...pathParams, age: pathParams.age+i, egfr: egfrSeries[i] };
-        out.push(round(prevent10(p),1));
-      }
-      return out;
-    }
-    function mortProjection(pathParams, egfrSeries, cvdSeries){
-      const out = [];
-      for(let i=0;i<egfrSeries.length;i++){
-        const p = { ...pathParams, age: pathParams.age+i, egfr: egfrSeries[i] };
-        out.push(round(mortality10(p, cvdSeries[i]),1));
-      }
-      return out;
-    }
-
-    // ---------- ESKD-free survival ----------
-    const ESKD_THRESHOLD = 15; 
-    const ESKD_HORIZON = 25;   
-
-    function chronicSlope(egfrSeries){
-      const drop = egfrSeries[1] - egfrSeries[egfrSeries.length-1]; 
-      const yrs = egfrSeries.length - 2; 
-      return Math.max(0.05, drop / yrs);
-    }
-
-    function yearsToESKD(startEgfr, slopePerYr){
-      if(startEgfr <= ESKD_THRESHOLD) return 0;
-      const yrs = (startEgfr - ESKD_THRESHOLD) / slopePerYr;
-      return yrs; 
-    }
-
-    function declineLine(startEgfr, slopePerYr){
-      const tHit = yearsToESKD(startEgfr, slopePerYr);
-      if(tHit <= ESKD_HORIZON){
-        return [{x:0,y:round(startEgfr,1)},{x:round(tHit,2),y:ESKD_THRESHOLD}];
-      }
-      const yAtHorizon = startEgfr - slopePerYr*ESKD_HORIZON;
-      return [{x:0,y:round(startEgfr,1)},{x:ESKD_HORIZON,y:round(yAtHorizon,1)}];
-    }
-
-    const yearsLabels = ['0y','1y','2y','3y','4y','5y'];
-    let egfrChart, cvdChart, mortChart, eskdLineChart;
-
-    function axisColor(){ return getComputedStyle(document.body).color; }
-    function gridColor(){ return state.theme==='light' ? 'rgba(2,6,23,0.08)' : 'rgba(255,255,255,0.06)'; }
-
-    const solidBackgroundPlugin = {
-      id: 'customCanvasBackgroundColor',
-      beforeDraw: (chart) => {
-        const ctx = chart.canvas.getContext('2d');
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = state.theme === 'light' ? '#ffffff' : '#0f172a';
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-      }
-    };
-
-    function buildLineChart(ctx, yTitle, suggestedMax){
-      return new Chart(ctx, {
-        type: 'line',
-        data: { labels: yearsLabels, datasets: [
-          { label:'Current',   data:[], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.08)', borderWidth:3, tension:0.25, pointRadius:2 },
-          { label:'Simulated', data:[], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.06)', borderWidth:3, borderDash:[6,4], tension:0.25, pointRadius:2 },
-          { label:'Optimal',   data:[], borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.06)', borderWidth:3, tension:0.25, pointRadius:2 }
-        ]},
-        options: {
-          responsive:true, maintainAspectRatio:false,
-          animation:{ duration:500, easing:'easeOutCubic' },
-          plugins:{ legend:{ display:true, labels:{ color: axisColor(), boxWidth:14 } }, tooltip:{ mode:'index', intersect:false } },
-          scales:{
-            x:{ ticks:{ color: axisColor() }, grid:{ color: gridColor() } },
-            y:{ beginAtZero:true, suggestedMax, ticks:{ color: axisColor() }, grid:{ color: gridColor() },
-                title:{ display:true, text:yTitle, color: axisColor() } }
-          }
-        },
-        plugins: [solidBackgroundPlugin]
-      });
-    }
-
-    function initCharts(){
-      egfrChart = buildLineChart(dom.egfrCanvas.getContext('2d'), 'eGFR (mL/min/1.73m²)', 110);
-      cvdChart  = buildLineChart(dom.cvdCanvas.getContext('2d'), '10-yr CVD risk (%)', 20);
-      mortChart = buildLineChart(dom.mortCanvas.getContext('2d'), '10-yr all-cause mortality (%)', 20);
-      eskdLineChart = buildEskdLineChart(dom.eskdLineCanvas.getContext('2d'));
-    }
-
-    function buildEskdLineChart(ctx){
-      const thresholdLine = {
-        id:'eskdThreshold',
-        afterDraw(chart){
-          const {ctx, chartArea:{left,right}, scales:{y}} = chart;
-          const yPix = y.getPixelForValue(ESKD_THRESHOLD);
-          ctx.save();
-          ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5; ctx.setLineDash([5,4]);
-          ctx.beginPath(); ctx.moveTo(left, yPix); ctx.lineTo(right, yPix); ctx.stroke();
-          ctx.setLineDash([]); ctx.fillStyle = '#f59e0b'; ctx.font = '11px Inter, sans-serif';
-          ctx.textAlign = 'right';
-          ctx.fillText('ESKD threshold (eGFR 15)', right-4, yPix-5);
-          ctx.restore();
-        }
-      };
-      return new Chart(ctx, {
-        type:'line',
-        data:{ datasets:[
-          { label:'Current',   data:[], borderColor:'#ef4444', borderWidth:3, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 },
-          { label:'Simulated', data:[], borderColor:'#3b82f6', borderWidth:3, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 },
-          { label:'Optimal',   data:[], borderColor:'#10b981', borderWidth:3, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 }
-        ]},
-        options:{
-          responsive:true, maintainAspectRatio:false,
-          animation:{ duration:500, easing:'easeOutCubic' },
-          plugins:{ 
-            legend:{ display:true, labels:{ color: axisColor(), boxWidth:14 } },
-            tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${c.raw.y} mL/min at ${c.raw.x} yr` } } 
-          },
-          scales:{
-            x:{ type:'linear', min:0, max:ESKD_HORIZON, title:{ display:true, text:'Years since now', color: axisColor() },
-                ticks:{ color: axisColor(), stepSize:5 }, grid:{ color: gridColor() } },
-            y:{ min:0, max:60, title:{ display:true, text:'eGFR (mL/min/1.73m²)', color: axisColor() },
-                ticks:{ color: axisColor() }, grid:{ color: gridColor() } }
-          }
-        },
-        plugins:[thresholdLine, solidBackgroundPlugin]
-      });
-    }
-
-    function autoScaleRisk(ch){
-      let max = 0;
-      ch.data.datasets.forEach(ds => ds.data.forEach(v => { if(v > max) max = v; }));
-      const target = Math.max(5, Math.ceil((max * 1.25) / 5) * 5); 
-      ch.options.scales.y.suggestedMax = target;
-      ch.options.scales.y.max = target;
-    }
-
-    function recolorCharts(){
-      [egfrChart, cvdChart, mortChart, eskdLineChart].forEach(ch => {
-        if(!ch) return;
-        ch.options.plugins.legend.labels.color = axisColor();
-        ['x','y'].forEach(ax=>{
-          ch.options.scales[ax].ticks.color = axisColor();
-          ch.options.scales[ax].grid.color = gridColor();
-          if(ch.options.scales[ax].title) ch.options.scales[ax].title.color = axisColor();
-        });
-        ch.update('none');
-      });
-      if(state._eskd) renderEskdBars(state._eskd);
-    }
-
-    function renderEskdBars(d){
-      const cap = ESKD_HORIZON;
-      const cCur = Math.min(d.cur, cap), cSim = Math.min(d.sim, cap), cOpt = Math.min(d.opt, cap);
-      const fmt = v => v >= cap ? `>${cap}` : v.toFixed(1);
-      const gainSim = Math.max(0, cSim - cCur);
-      const gainOpt = Math.max(0, cOpt - cCur);
-      const curCensored = cCur >= cap;   
-      const txtCol = axisColor();
-      const trackCol = state.theme==='light' ? 'rgba(2,6,23,0.06)' : 'rgba(255,255,255,0.06)';
-      const gainTxtFor = (gain, disp) => {
-        if(curCensored) return '<span class="sema-badge ml-2">both &gt;25 yr</span>';
-        if(gain <= 0.05) return '';
-        const prefix = disp >= cap ? '≥' : '+';
-        return `<span class="sema-badge ml-2">${prefix}${gain.toFixed(1)} yr dialysis-free</span>`;
-      };
-      const rows = [
-        { label:'Current',   raw:cCur, color:'#ef4444', gain:0,       disp:cCur },
-        { label:'Simulated', raw:cSim, color:'#3b82f6', gain:gainSim, disp:cSim },
-        { label:'Optimal',   raw:cOpt, color:'#10b981', gain:gainOpt, disp:cOpt }
-      ];
-      const html = rows.map(r=>{
-        const pct = clamp((r.raw/cap)*100, 0, 100);
-        const gainTxt = r.label==='Current' ? '' : gainTxtFor(r.gain, r.disp);
-        return `
-        <div class="mb-3">
-          <div class="flex items-center justify-between text-xs mb-1" style="color:${txtCol}">
-            <span class="font-semibold">${r.label}</span>
-            <span>${fmt(r.raw)} yrs to ESKD ${gainTxt}</span>
-          </div>
-          <div style="position:relative;height:22px;border-radius:8px;background:${trackCol};overflow:hidden;">
-            <div style="height:100%;width:${pct}%;background:${r.color};border-radius:8px;transition:width .5s ease;"></div>
-          </div>
-        </div>`;
-      }).join('');
-      let summary;
-      if(curCensored){
-        summary = `
-        <div class="mt-2 text-xs" style="color:${txtCol}">
-          <span class="font-semibold">Current trajectory already exceeds 25 years to ESKD</span>
-          &nbsp;•&nbsp; this is a low-renal-risk profile; the dialysis-free benefit of intervention is modest here. CV/mortality reduction is the more relevant gain.
-        </div>`;
-      } else {
-        const simPrefix = cSim >= cap ? '≥' : '~';
-        const optPrefix = cOpt >= cap ? '≥' : '~';
-        summary = `
-        <div class="mt-2 text-xs" style="color:${txtCol}">
-          <span class="font-semibold">Simulated regimen buys ${simPrefix}${gainSim.toFixed(1)} extra dialysis-free years</span>
-          &nbsp;•&nbsp; Optimal buys ${optPrefix}${gainOpt.toFixed(1)} years vs current path.
-        </div>`;
-      }
-      dom.eskdBars.innerHTML = html + summary;
-    }
-
-    function attachKpiHover(elBar, elTip){
-      const parent = elBar.parentElement;
-      parent.style.position = 'relative';
-      parent.addEventListener('mouseenter', ()=>{ elTip.classList.add('show'); elTip.style.left = (parent.clientWidth/2)+'px'; });
-      parent.addEventListener('mouseleave', ()=> elTip.classList.remove('show'));
-    }
-
-    // ---------- Read inputs ----------
-    function valOf(numEl, sliderEl, isFloat){
-      if (document.activeElement === sliderEl) {
-        return isFloat ? parseFloat(sliderEl.value) : Math.round(sliderEl.value);
-      }
-      let v = parseFloat(numEl.value);
-      if (isNaN(v)) v = parseFloat(sliderEl.value);
-      return isFloat ? v : Math.round(v);
-    }
-    
-    function syncControl(sliderEl, numEl, value){
-      const lo = parseFloat(sliderEl.min), hi = parseFloat(sliderEl.max);
-      sliderEl.value = clamp(value, lo, hi);
-      const beyond = value < lo || value > hi;
-      numEl.classList.toggle('out-of-range', beyond);
-      if(document.activeElement !== numEl){
-        const isFloat = (numEl.step && parseFloat(numEl.step) < 1);
-        numEl.value = isFloat ? value : Math.round(value);
-      }
-    }
-
-    function readInputs(){
-      const age=valOf(dom.ageNum, dom.age, false);
-      const height=valOf(dom.heightNum, dom.height, false);
-      const weight=valOf(dom.weightNum, dom.weight, false);
-      const sex=dom.sex.value, population=dom.population.value;
-      const creatinine=Math.max(0.1, valOf(dom.creatinineNum, dom.creatinine, true));
-      const uacr=Math.max(1, valOf(dom.uacrNum, dom.uacr, false));
-      const sbp=valOf(dom.sbpNum, dom.sbp, false);
-      const a1c=valOf(dom.a1cNum, dom.a1c, true);
-      const totalChol=valOf(dom.tcNum, dom.tc, false);
-      const hdl=valOf(dom.hdlNum, dom.hdl, false);
-      const diabetes=dom.diabetes.checked, hypertension=dom.hypertension.checked, smoker=dom.smoker.checked;
-      const bpControlled=dom.bpControl.checked, onACEi=dom.acei.checked, onSGLT2i=dom.sglt2i.checked;
-      const onMRA=dom.mra.checked, statin=dom.statin.checked, onSema=dom.sema.checked;
-      const bmi=round(calcBMI(weight,height),1);
-      const egfr=egfrCKDEPI2021(age,sex,creatinine);
-      const lp=kfreLP({ age, male: sex==='male'?1:0, egfr, uacr });
-      const kfre2=round(kfreRisk(2,lp),1), kfre5=round(kfreRisk(5,lp),1);
-      return { age,height,weight,sex,population,creatinine,uacr,sbp,a1c,totalChol,hdl,
-        diabetes,hypertension,smoker,bpControlled,onACEi,onSGLT2i,onMRA,statin,onSema,
-        bmi,egfr,egfrStage:egfrStageText(egfr),kfre2,kfre5 };
-    }
-
-    function catKFRE(v){ return v<2?'Low':v<5?'Intermediate':v<15?'High':'Very High'; }
-    function catCVD(v){ return v<5?'Low':v<10?'Borderline':v<20?'Intermediate':'High'; }
-    function catMort(v){ return v<5?'Low':v<15?'Moderate':v<30?'High':'Very High'; }
-
-    // ---------- Main compute/render ----------
-    function updateUIandCharts(){
-      const inp = readInputs();
-
-      syncControl(dom.age, dom.ageNum, inp.age);
-      syncControl(dom.height, dom.heightNum, inp.height);
-      syncControl(dom.weight, dom.weightNum, inp.weight);
-      syncControl(dom.creatinine, dom.creatinineNum, inp.creatinine);
-      syncControl(dom.uacr, dom.uacrNum, inp.uacr);
-      syncControl(dom.sbp, dom.sbpNum, inp.sbp);
-      syncControl(dom.a1c, dom.a1cNum, inp.a1c);
-      syncControl(dom.tc, dom.tcNum, inp.totalChol);
-      syncControl(dom.hdl, dom.hdlNum, inp.hdl);
-
-      const baseCVDParams = { age:inp.age, sex:inp.sex, sbp:inp.sbp, totalChol:inp.totalChol, hdl:inp.hdl,
-        diabetes:inp.diabetes, smoker:inp.smoker, egfr:inp.egfr, onACEi:inp.onACEi, statin:inp.statin,
-        onSGLT2i:inp.onSGLT2i, onMRA:inp.onMRA, onSema:inp.onSema, bpControlled:inp.bpControlled };
-      const cvdNow = round(prevent10(baseCVDParams),1);
-      const mortNow = round(mortality10(baseCVDParams, cvdNow),1);
-
-      dom.egfrNow.textContent=inp.egfr; dom.egfrStage.textContent=inp.egfrStage;
-      dom.kfre2.textContent=`${inp.kfre2}%`; dom.kfre5.textContent=`${inp.kfre5}%`;
-      dom.cvd10.textContent=`${cvdNow}%`; dom.mort10.textContent=`${mortNow}%`;
-      dom.kfre2Cat.textContent=catKFRE(inp.kfre2); dom.kfre5Cat.textContent=catKFRE(inp.kfre5);
-      dom.cvdCat.textContent=catCVD(cvdNow); dom.mortCat.textContent=catMort(mortNow);
-
-      dom.barEgfr.style.width=`${clamp((inp.egfr/120)*100,0,100)}%`; dom.tipEgfr.textContent=`eGFR: ${inp.egfr} mL/min/1.73m²`;
-      dom.barKFRE2.style.width=`${clamp(inp.kfre2,0,100)}%`; dom.tipKFRE2.textContent=`KFRE 2-yr: ${inp.kfre2}%`;
-      dom.barKFRE5.style.width=`${clamp(inp.kfre5,0,100)}%`; dom.tipKFRE5.textContent=`KFRE 5-yr: ${inp.kfre5}%`;
-      dom.barCVD.style.width=`${clamp(cvdNow,0,100)}%`; dom.tipCVD.textContent=`10-yr CVD: ${cvdNow}%`;
-      dom.barMort.style.width=`${clamp(mortNow,0,100)}%`; dom.tipMort.textContent=`10-yr mortality: ${mortNow}%`;
-
-      updateStoryText(inp);
-
-      const egfrCurrent = egfrProjection(inp.egfr, {
-        age:inp.age, sbp:inp.sbp, diabetes:inp.diabetes, a1c:inp.a1c, smoker:inp.smoker, bmi:inp.bmi,
-        population:inp.population, uacr:inp.uacr, egfr:inp.egfr, bpControlled:false,
-        onACEi:inp.onACEi, onSGLT2i:inp.onSGLT2i, onMRA:inp.onMRA, onSema:inp.onSema });
-
-      const simSBP = dom.sim_controlBP.checked ? Math.min(inp.sbp,125) : inp.sbp;
-      const simA1c = (inp.diabetes && dom.sim_controlA1c.checked) ? Math.min(inp.a1c,7.0) : inp.a1c;
-      const simSmoker = dom.sim_stopSmoker.checked ? false : inp.smoker;
-      const simSGLT2i = dom.sim_onSGLT2i.checked ? true : inp.onSGLT2i;
-      const simStatin = dom.sim_onStatin.checked ? true : inp.statin;
-      const simMRA    = dom.sim_onMRA.checked ? true : inp.onMRA;
-      const simSema   = dom.sim_onSema.checked ? true : inp.onSema;
-
-      const egfrSim = egfrProjection(inp.egfr, {
-        age:inp.age, sbp:simSBP, diabetes:inp.diabetes, a1c:simA1c, smoker:simSmoker, bmi:inp.bmi,
-        population:inp.population, uacr:inp.uacr, egfr:inp.egfr, bpControlled:dom.sim_controlBP.checked,
-        onACEi:inp.onACEi, onSGLT2i:simSGLT2i, onMRA:simMRA, onSema:simSema });
-
-      const egfrOpt = egfrProjection(inp.egfr, {
-        age:inp.age, sbp:123, diabetes:inp.diabetes, a1c:inp.diabetes?6.8:inp.a1c, smoker:false,
-        bmi:Math.min(inp.bmi, inp.population==='asian'?23:25), population:inp.population, uacr:inp.uacr,
-        egfr:inp.egfr, bpControlled:true, onACEi:true, onSGLT2i:true,
-        onMRA: inp.diabetes?true:inp.onMRA, onSema: inp.diabetes?true:inp.onSema });
-
-      const cvdCurrent = cvdProjection(baseCVDParams, egfrCurrent);
-      const cvdSimParams = { ...baseCVDParams, sbp:simSBP, smoker:simSmoker, statin:simStatin,
-        onSGLT2i:simSGLT2i, onMRA:simMRA, onSema:simSema, bpControlled:dom.sim_controlBP.checked };
-      const cvdSim = cvdProjection(cvdSimParams, egfrSim);
-      const cvdOptParams = { ...baseCVDParams, sbp:123, smoker:false, onACEi:true, statin:true,
-        onSGLT2i:true, onMRA: inp.diabetes?true:baseCVDParams.onMRA, onSema: inp.diabetes?true:baseCVDParams.onSema, bpControlled:true };
-      const cvdOpt = cvdProjection(cvdOptParams, egfrOpt);
-
-      const mortCurrent = mortProjection(baseCVDParams, egfrCurrent, cvdCurrent);
-      const mortSim     = mortProjection(cvdSimParams, egfrSim, cvdSim);
-      const mortOpt     = mortProjection(cvdOptParams, egfrOpt, cvdOpt);
-
-      state._egfr={c:egfrCurrent,s:egfrSim,o:egfrOpt};
-      state._cvd={c:cvdCurrent,s:cvdSim,o:cvdOpt};
-      state._mort={c:mortCurrent,s:mortSim,o:mortOpt};
-
-      egfrChart.data.datasets[0].data=egfrCurrent; egfrChart.data.datasets[1].data=egfrSim; egfrChart.data.datasets[2].data=egfrOpt; egfrChart.update();
-      cvdChart.data.datasets[0].data=cvdCurrent; cvdChart.data.datasets[1].data=cvdSim; cvdChart.data.datasets[2].data=cvdOpt; autoScaleRisk(cvdChart); cvdChart.update();
-      mortChart.data.datasets[0].data=mortCurrent; mortChart.data.datasets[1].data=mortSim; mortChart.data.datasets[2].data=mortOpt; autoScaleRisk(mortChart); mortChart.update();
-
-      const slopeCur = chronicSlope(egfrCurrent);
-      const slopeSim = chronicSlope(egfrSim);
-      const slopeOpt = chronicSlope(egfrOpt);
-      const tCur = yearsToESKD(inp.egfr, slopeCur);
-      const tSim = yearsToESKD(inp.egfr, slopeSim);
-      const tOpt = yearsToESKD(inp.egfr, slopeOpt);
-      eskdLineChart.data.datasets[0].data = declineLine(inp.egfr, slopeCur);
-      eskdLineChart.data.datasets[1].data = declineLine(inp.egfr, slopeSim);
-      eskdLineChart.data.datasets[2].data = declineLine(inp.egfr, slopeOpt);
-      eskdLineChart.options.scales.y.max = Math.max(60, Math.ceil((inp.egfr+5)/10)*10);
-      eskdLineChart.update();
-      const eskd = { cur:tCur, sim:tSim, opt:tOpt, slopeCur, slopeSim, slopeOpt };
-      state._eskd = eskd;
-      renderEskdBars(eskd);
-
-      return { age:inp.age, sex:inp.sex, egfr:inp.egfr, egfrStage:inp.egfrStage, uacr:inp.uacr,
-        kfre2:inp.kfre2, kfre5:inp.kfre5, cvd10:cvdNow, mort10:mortNow, simSBP, simA1c,
-        onACEi:inp.onACEi, onSGLT2i:inp.onSGLT2i, onMRA:inp.onMRA, onStatin:inp.statin, onSema:inp.onSema,
-        eskdCur:Math.min(tCur,ESKD_HORIZON), eskdSim:Math.min(tSim,ESKD_HORIZON), eskdOpt:Math.min(tOpt,ESKD_HORIZON) };
-    }
-
-    function updateStoryText(inp){
-      const city='Pune';
-      const bmiCat=bmiCategory(inp.bmi,inp.population).toLowerCase();
-      const smokeTxt=inp.smoker?'currently smokes':'is a non-smoker';
-      const bpTxt=inp.bpControlled?'controlled':'uncontrolled';
-      const acrTxt=inp.uacr>=300?'severely increased UACR':(inp.uacr>=30?'moderately increased UACR':'normal UACR');
-      const gfr=`${inp.egfr} (${inp.egfrStage})`;
-      const meds = `${inp.onACEi?'On ACEi/ARB. ':''}${inp.onSGLT2i?'On SGLT2i. ':''}${inp.onSema?'On semaglutide. ':''}${inp.statin?'On statin.':''}`;
-      const who = state.profile==='arjun'
-        ? `Arjun is a ${inp.age}-year-old man`
-        : `Meera is a ${inp.age}-year-old woman`;
-      const pron = state.profile==='arjun' ? 'He' : 'She';
-      dom.story.textContent = `${who} from ${city} with ${bmiCat} BMI (${inp.bmi}). ${pron} ${smokeTxt} and has ${bpTxt} blood pressure (SBP ${inp.sbp} mmHg). Kidney function (CKD-EPI 2021) is eGFR ${gfr}; albuminuria is ${acrTxt}. ${meds}`;
-    }
-
-    // ---------- Profiles ----------
-    function applyProfile(profile){
-      state.profile=profile;
-      dom.cardArjun.classList.toggle('btn-tab-active', profile==='arjun');
-      dom.cardMeera.classList.toggle('btn-tab-active', profile==='meera');
-      if(profile==='arjun'){
-        dom.sex.value='male';
-        dom.ageNum.value=35; dom.heightNum.value=173; dom.weightNum.value=76;
-        dom.creatinineNum.value=1.05; dom.uacrNum.value=50; dom.sbpNum.value=132; dom.a1cNum.value=5.8;
-        dom.tcNum.value=190; dom.hdlNum.value=48;
-        dom.diabetes.checked=false; dom.hypertension.checked=true; dom.smoker.checked=false; dom.bpControl.checked=true;
-        dom.acei.checked=true; dom.sglt2i.checked=false; dom.mra.checked=false; dom.statin.checked=false; dom.sema.checked=false;
-      } else {
-        dom.sex.value='female';
-        dom.ageNum.value=41; dom.heightNum.value=162; dom.weightNum.value=84;
-        dom.creatinineNum.value=1.00; dom.uacrNum.value=250; dom.sbpNum.value=146; dom.a1cNum.value=7.8;
-        dom.tcNum.value=210; dom.hdlNum.value=40;
-        dom.diabetes.checked=true; dom.hypertension.checked=true; dom.smoker.checked=false; dom.bpControl.checked=false;
-        dom.acei.checked=true; dom.sglt2i.checked=true; dom.mra.checked=true; dom.statin.checked=true; dom.sema.checked=false;
-      }
-      ['sim_stopSmoker','sim_controlBP','sim_controlA1c','sim_onStatin','sim_onSGLT2i','sim_onMRA','sim_onSema'].forEach(id=>{ if($(id)) $(id).checked=false; });
-      computeAndRender();
-    }
-
-    function computeAndRender(){ state.lastSnapshot = updateUIandCharts(); }
-
-    // ---------- Theme ----------
-    function setTheme(mode){
-      const root=document.documentElement;
-      if(mode==='light'){ root.classList.remove('dark'); root.classList.add('light'); document.body.classList.add('light'); dom.themeToggle.textContent='Dark'; }
-      else { root.classList.remove('light'); root.classList.add('dark'); document.body.classList.remove('light'); dom.themeToggle.textContent='Light'; }
-      state.theme=mode;
-      recolorCharts();
-    }
-
-    // ---------- Popover ----------
-    const popover=$('popover');
-    function showPopover(target,text){
-      popover.style.display='block'; popover.innerText=text;
-      const rect=target.getBoundingClientRect();
-      popover.style.top=`${rect.top+window.scrollY-popover.offsetHeight-10}px`;
-      popover.style.left=`${rect.left+window.scrollX - 100}px`;
-      popover.setAttribute('aria-hidden','false');
-    }
-    function hidePopover(){ popover.style.display='none'; popover.setAttribute('aria-hidden','true'); }
-
-    // ---------- Export ----------
-    function exportCSV(){
-      const inp=state.lastSnapshot||{};
-      const rows=[];
-      rows.push(['Profile','Age','Sex','eGFR','eGFR_stage','UACR','KFRE_2yr','KFRE_5yr','CVD_10yr','Mortality_10yr','ESKDfree_cur_yr','ESKDfree_sim_yr','ESKDfree_opt_yr','On_ACEi','On_SGLT2i','On_MRA','On_Statin','On_Semaglutide'].join(','));
-      
-      rows.push([state.profile,inp.age,inp.sex,inp.egfr,inp.egfrStage,inp.uacr,inp.kfre2,inp.kfre5,inp.cvd10,inp.mort10,
-        inp.eskdCur!==undefined?round(inp.eskdCur,1):'',inp.eskdSim!==undefined?round(inp.eskdSim,1):'',inp.eskdOpt!==undefined?round(inp.eskdOpt,1):'',
-        (inp.onACEi == true ? 1 : 0), (inp.onSGLT2i == true ? 1 : 0), (inp.onMRA == true ? 1 : 0), (inp.onStatin == true ? 1 : 0), (inp.onSema == true ? 1 : 0)].join(','));
-      
-      rows.push('');
-      rows.push('Year,eGFR_cur,eGFR_sim,eGFR_opt,CVD_cur,CVD_sim,CVD_opt,Mort_cur,Mort_sim,Mort_opt');
-      const e=state._egfr,c=state._cvd,m=state._mort;
-      for(let i=0;i<6;i++){
-        rows.push([`${i}y`,e.c[i],e.s[i],e.o[i],c.c[i],c.s[i],c.o[i],m.c[i],m.s[i],m.o[i]].join(','));
-      }
-      const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
-      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-      a.download=`cardiorenal_${state.profile}_snapshot.csv`; document.body.appendChild(a); a.click(); a.remove();
-    }
-
-    async function exportPDF(){
-      const { jsPDF }=window.jspdf;
-      const doc=new jsPDF({ orientation:'portrait', unit:'px', format:'a4' });
-      const inp=state.lastSnapshot||{};
-      doc.setFontSize(16); doc.text('Cardiorenal Journey — Snapshot', 30, 40);
-      doc.setFontSize(11); doc.text(`Profile: ${state.profile}`, 30, 64);
-      doc.text(`Age: ${inp.age}   Sex: ${inp.sex}   eGFR: ${inp.egfr} (${inp.egfrStage})`, 30, 84);
-      doc.text(`UACR: ${inp.uacr} mg/g`, 30, 102);
-      doc.text(`KFRE 2y: ${inp.kfre2}%   KFRE 5y: ${inp.kfre5}%`, 30, 120);
-      doc.text(`10y CVD: ${inp.cvd10}%   10y mortality: ${inp.mort10}%`, 30, 138);
-      doc.text(`Semaglutide: ${inp.onSema?'Yes':'No'}   SGLT2i: ${inp.onSGLT2i?'Yes':'No'}`, 30, 156);
-      
-      doc.addImage(dom.egfrCanvas.toDataURL('image/png',1.0),'PNG',30,170,386,130);
-      doc.addImage(dom.cvdCanvas.toDataURL('image/png',1.0),'PNG',30,320,386,130);
-      doc.addImage(dom.mortCanvas.toDataURL('image/png',1.0),'PNG',30,470,386,130);
-      
-      doc.setFontSize(9);
-      doc.text('Educational simulation only. Not medical advice. Drug effects approximated from FLOW, CREDENCE, EMPA-KIDNEY, FIDELIO.', 30, 615);
-      doc.save(`cardiorenal_${state.profile}_snapshot.pdf`);
-    }
-
-    // ---------- Wiring ----------
-    document.addEventListener('DOMContentLoaded', ()=>{
-      initCharts();
-      attachKpiHover(dom.barEgfr, dom.tipEgfr);
-      attachKpiHover(dom.barKFRE2, dom.tipKFRE2);
-      attachKpiHover(dom.barKFRE5, dom.tipKFRE5);
-      attachKpiHover(dom.barCVD, dom.tipCVD);
-      attachKpiHover(dom.barMort, dom.tipMort);
-
-      dom.cardArjun.addEventListener('click', ()=>applyProfile('arjun'));
-      dom.cardMeera.addEventListener('click', ()=>applyProfile('meera'));
-
-      document.querySelectorAll('input[type="range"], input[type="number"], input[type="checkbox"], select').forEach(el=>{
-        el.addEventListener('input', computeAndRender);
-        el.addEventListener('change', computeAndRender);
-      });
-
-      document.querySelectorAll('.info-dot').forEach(dot=>{
-        dot.addEventListener('mouseenter', ()=>showPopover(dot, dot.dataset.info));
-        dot.addEventListener('mouseleave', hidePopover);
-      });
-
-      dom.exportCSV.addEventListener('click', exportCSV);
-      dom.exportPDF.addEventListener('click', exportPDF);
-      dom.themeToggle.addEventListener('click', ()=> setTheme(state.theme==='dark'?'light':'dark'));
-
-      applyProfile('arjun');
-      setTheme('dark');
+      },
+      plugins:[solidBgPlugin]
     });
-  </script>
+  }
+
+  function buildEskdLineChart(ctx){
+    const threshPlugin = {
+      id:'eskdLine',
+      afterDraw(chart){
+        const {ctx:c, chartArea:{left,right}, scales:{y}} = chart;
+        const yP = y.getPixelForValue(ESKD_THRESHOLD);
+        c.save();
+        c.strokeStyle='#f59e0b'; c.lineWidth=1.5; c.setLineDash([5,4]);
+        c.beginPath(); c.moveTo(left,yP); c.lineTo(right,yP); c.stroke();
+        c.setLineDash([]); c.fillStyle='#f59e0b'; c.font='11px Inter,sans-serif';
+        c.textAlign='right';
+        c.fillText('ESKD threshold (eGFR 15)',right-4,yP-5);
+        c.restore();
+      }
+    };
+    return new Chart(ctx, {
+      type:'line',
+      data:{ datasets:[
+        { label:'Current',   data:[], borderColor:'#ef4444', borderWidth:2.5, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 },
+        { label:'Simulated', data:[], borderColor:'#3b82f6', borderWidth:2.5, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 },
+        { label:'Optimal',   data:[], borderColor:'#10b981', borderWidth:2.5, borderDash:[7,4], pointRadius:3, parsing:false, tension:0 }
+      ]},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        animation:{ duration:480, easing:'easeOutCubic' },
+        plugins:{
+          legend:{ display:true, labels:{ color:axisColor(), boxWidth:14, font:{size:11} } },
+          tooltip:{ callbacks:{ label:c=>`${c.dataset.label}: eGFR ${c.raw.y} at yr ${c.raw.x}` } }
+        },
+        scales:{
+          x:{ type:'linear', min:0, max:ESKD_HORIZON,
+              title:{ display:true, text:'Years from now', color:axisColor(), font:{size:11} },
+              ticks:{ color:axisColor(), stepSize:5, font:{size:11} }, grid:{ color:gridColor() } },
+          y:{ min:0, max:60,
+              title:{ display:true, text:'eGFR (mL/min/1.73m²)', color:axisColor(), font:{size:11} },
+              ticks:{ color:axisColor(), font:{size:11} }, grid:{ color:gridColor() } }
+        }
+      },
+      plugins:[threshPlugin, solidBgPlugin]
+    });
+  }
+
+  function initCharts(){
+    egfrChart    = buildLineChart(dom.egfrCanvas.getContext('2d'),  'eGFR (mL/min/1.73m²)', 110);
+    cvdChart     = buildLineChart(dom.cvdCanvas.getContext('2d'),   '10-yr CVD risk (%)', 20);
+    mortChart    = buildLineChart(dom.mortCanvas.getContext('2d'),  '10-yr mortality (%)', 20);
+    eskdLineChart= buildEskdLineChart(dom.eskdLineCanvas.getContext('2d'));
+  }
+
+  function autoScaleRisk(ch){
+    let max=0; ch.data.datasets.forEach(ds=>ds.data.forEach(v=>{ if(v>max) max=v; }));
+    const target = Math.max(5, Math.ceil((max*1.3)/5)*5);
+    ch.options.scales.y.suggestedMax = target; ch.options.scales.y.max = target;
+  }
+
+  function recolorCharts(){
+    [egfrChart,cvdChart,mortChart,eskdLineChart].forEach(ch=>{
+      if(!ch) return;
+      ch.options.plugins.legend.labels.color = axisColor();
+      ['x','y'].forEach(ax=>{
+        ch.options.scales[ax].ticks.color = axisColor();
+        ch.options.scales[ax].grid.color  = gridColor();
+        if(ch.options.scales[ax].title) ch.options.scales[ax].title.color = axisColor();
+      });
+      ch.update('none');
+    });
+    if(state._eskd) renderEskdBars(state._eskd);
+  }
+
+  function renderEskdBars(d){
+    const cap=ESKD_HORIZON;
+    const cCur=Math.min(d.cur,cap), cSim=Math.min(d.sim,cap), cOpt=Math.min(d.opt,cap);
+    const fmt = v => v>=cap ? `>${cap}` : v.toFixed(1);
+    const gainSim = Math.max(0,cSim-cCur), gainOpt = Math.max(0,cOpt-cCur);
+    const curCensored = cCur>=cap;
+    const txtCol = state.theme==='light' ? '#0b1220' : '#e2e8f0';
+    const trackCol= state.theme==='light' ? 'rgba(2,6,23,0.06)' : 'rgba(255,255,255,0.05)';
+    const gainTxtFor=(gain,disp)=>{
+      if(curCensored) return '<span class="sema-badge ml-2">both &gt;25 yr</span>';
+      if(gain<=0.05) return '';
+      const pre = disp>=cap ? '≥' : '+';
+      return `<span class="sema-badge ml-2">${pre}${gain.toFixed(1)} yr dialysis-free</span>`;
+    };
+    const rows=[
+      { label:'Current',   raw:cCur, color:'#ef4444', gain:0,       disp:cCur },
+      { label:'Simulated', raw:cSim, color:'#3b82f6', gain:gainSim, disp:cSim },
+      { label:'Optimal',   raw:cOpt, color:'#10b981', gain:gainOpt, disp:cOpt }
+    ];
+    const html = rows.map(r=>{
+      const pct=clamp((r.raw/cap)*100,0,100);
+      const gainTxt=r.label==='Current' ? '' : gainTxtFor(r.gain,r.disp);
+      return `<div class="mb-3">
+        <div class="flex items-center justify-between text-xs mb-1" style="color:${txtCol}">
+          <span class="font-semibold">${r.label}</span>
+          <span>${fmt(r.raw)} yrs to ESKD ${gainTxt}</span>
+        </div>
+        <div style="position:relative;height:22px;border-radius:8px;background:${trackCol};overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${r.color};border-radius:8px;transition:width .5s ease;"></div>
+        </div>
+      </div>`;
+    }).join('');
+    let summary;
+    if(curCensored){
+      summary=`<div class="mt-2 text-xs" style="color:${txtCol}">
+        <span class="font-semibold">Current trajectory exceeds 25-yr ESKD horizon</span>
+        — low renal-progression risk profile; CV/mortality reduction is the more relevant therapeutic gain.
+      </div>`;
+    } else {
+      const sp=cSim>=cap?'≥':'~', op=cOpt>=cap?'≥':'~';
+      summary=`<div class="mt-2 text-xs" style="color:${txtCol}">
+        <span class="font-semibold">Simulated regimen projects ${sp}${gainSim.toFixed(1)} extra dialysis-free years</span>
+        &nbsp;·&nbsp; Optimal projects ${op}${gainOpt.toFixed(1)} yr vs current path.
+      </div>`;
+    }
+    dom.eskdBars.innerHTML = html+summary;
+  }
+
+  /* ── KPI bar hover ── */
+  function attachKpiHover(elBar, elTip){
+    const par=elBar.parentElement; par.style.position='relative';
+    par.addEventListener('mouseenter',()=>{ elTip.classList.add('show'); elTip.style.left=(par.clientWidth/2)+'px'; });
+    par.addEventListener('mouseleave',()=> elTip.classList.remove('show'));
+  }
+
+  /* ── Input sync ── */
+  function valOf(numEl, sliderEl, isFloat){
+    if(document.activeElement===sliderEl) return isFloat?parseFloat(sliderEl.value):Math.round(sliderEl.value);
+    let v=parseFloat(numEl.value); if(isNaN(v)) v=parseFloat(sliderEl.value);
+    return isFloat ? v : Math.round(v);
+  }
+  function syncControl(sliderEl, numEl, value){
+    const lo=parseFloat(sliderEl.min), hi=parseFloat(sliderEl.max);
+    sliderEl.value=clamp(value,lo,hi);
+    numEl.classList.toggle('out-of-range', value<lo||value>hi);
+    if(document.activeElement!==numEl){
+      const isFloat=(numEl.step&&parseFloat(numEl.step)<1);
+      numEl.value = isFloat ? value : Math.round(value);
+    }
+  }
+
+  /* ── Read inputs ── */
+  function readInputs(){
+    const age=valOf(dom.ageNum,dom.age,false);
+    const height=valOf(dom.heightNum,dom.height,false);
+    const weight=valOf(dom.weightNum,dom.weight,false);
+    const sex=dom.sex.value, population=dom.population.value;
+    const creatinine=Math.max(0.1,valOf(dom.creatinineNum,dom.creatinine,true));
+    const uacr=Math.max(1,valOf(dom.uacrNum,dom.uacr,false));
+    const sbp=valOf(dom.sbpNum,dom.sbp,false);
+    const a1c=valOf(dom.a1cNum,dom.a1c,true);
+    const totalChol=valOf(dom.tcNum,dom.tc,false);
+    const hdl=valOf(dom.hdlNum,dom.hdl,false);
+    const diabetes=dom.diabetes.checked, hypertension=dom.hypertension.checked, smoker=dom.smoker.checked;
+    const bpControlled=dom.bpControl.checked, onACEi=dom.acei.checked, onSGLT2i=dom.sglt2i.checked;
+    const onMRA=dom.mra.checked, statin=dom.statin.checked, onSema=dom.sema.checked;
+    const bmi=round(calcBMI(weight,height),1);
+    const egfr=egfrCKDEPI2021(age,sex,creatinine);
+    const lp=kfreLP({ age, male:sex==='male'?1:0, egfr, uacr });
+    const kfre2=round(kfreRisk(2,lp),1), kfre5=round(kfreRisk(5,lp),1);
+    return { age,height,weight,sex,population,creatinine,uacr,sbp,a1c,totalChol,hdl,
+      diabetes,hypertension,smoker,bpControlled,onACEi,onSGLT2i,onMRA,statin,onSema,
+      bmi,egfr,egfrStage:egfrStageText(egfr),kfre2,kfre5 };
+  }
+
+  /* ── Main compute / render ── */
+  function updateUIandCharts(){
+    const inp = readInputs();
+
+    syncControl(dom.age,dom.ageNum,inp.age);
+    syncControl(dom.height,dom.heightNum,inp.height);
+    syncControl(dom.weight,dom.weightNum,inp.weight);
+    syncControl(dom.creatinine,dom.creatinineNum,inp.creatinine);
+    syncControl(dom.uacr,dom.uacrNum,inp.uacr);
+    syncControl(dom.sbp,dom.sbpNum,inp.sbp);
+    syncControl(dom.a1c,dom.a1cNum,inp.a1c);
+    syncControl(dom.tc,dom.tcNum,inp.totalChol);
+    syncControl(dom.hdl,dom.hdlNum,inp.hdl);
+
+    const baseCVDParams = { age:inp.age,sex:inp.sex,sbp:inp.sbp,totalChol:inp.totalChol,hdl:inp.hdl,
+      diabetes:inp.diabetes,smoker:inp.smoker,egfr:inp.egfr,onACEi:inp.onACEi,statin:inp.statin,
+      onSGLT2i:inp.onSGLT2i,onMRA:inp.onMRA,onSema:inp.onSema,bpControlled:inp.bpControlled };
+
+    const cvdNow  = round(prevent10(baseCVDParams),1);
+    const mortNow = round(mortality10(baseCVDParams, cvdNow),1);
+
+    /* KPI values with colour coding */
+    dom.egfrNow.textContent = inp.egfr;
+    dom.egfrNow.className   = `text-3xl font-extrabold mt-1 kpi-pop ${egfrStageClass(inp.egfr)}`;
+    dom.egfrStage.textContent = inp.egfrStage;
+    dom.egfrStage.className   = `text-xs font-bold mt-1 ${egfrStageClass(inp.egfr)}`;
+
+    const ck2 = catKFRE2(inp.kfre2), ck5 = catKFRE5(inp.kfre5);
+    const cCVD = catCVD(cvdNow), cMort = catMort(mortNow);
+
+    dom.kfre2.textContent = `${inp.kfre2}%`;
+    dom.kfre2.className   = `text-3xl font-extrabold mt-1 kpi-pop`;
+    dom.kfre2Cat.textContent = ck2.txt; dom.kfre2Cat.className = `rb ${ck2.cls}`;
+
+    dom.kfre5.textContent = `${inp.kfre5}%`;
+    dom.kfre5.className   = `text-3xl font-extrabold mt-1 kpi-pop`;
+    dom.kfre5Cat.textContent = ck5.txt; dom.kfre5Cat.className = `rb ${ck5.cls}`;
+
+    dom.cvd10.textContent = `${cvdNow}%`;
+    dom.cvd10.className   = `text-3xl font-extrabold mt-1 kpi-pop`;
+    dom.cvdCat.textContent = cCVD.txt; dom.cvdCat.className = `rb ${cCVD.cls}`;
+
+    dom.mort10.textContent = `${mortNow}%`;
+    dom.mort10.className   = `text-3xl font-extrabold mt-1 kpi-pop`;
+    dom.mortCat.textContent = cMort.txt; dom.mortCat.className = `rb ${cMort.cls}`;
+
+    /* KPI bars */
+    dom.barEgfr.style.width=`${clamp((inp.egfr/120)*100,0,100)}%`; dom.tipEgfr.textContent=`eGFR: ${inp.egfr} mL/min/1.73m²`;
+    dom.barKFRE2.style.width=`${clamp(inp.kfre2,0,100)}%`; dom.tipKFRE2.textContent=`KFRE 2-yr: ${inp.kfre2}%`;
+    dom.barKFRE5.style.width=`${clamp(inp.kfre5,0,100)}%`; dom.tipKFRE5.textContent=`KFRE 5-yr: ${inp.kfre5}%`;
+    dom.barCVD.style.width=`${clamp(cvdNow,0,100)}%`; dom.tipCVD.textContent=`10-yr CVD: ${cvdNow}%`;
+    dom.barMort.style.width=`${clamp(mortNow,0,100)}%`; dom.tipMort.textContent=`10-yr mortality (modelled): ${mortNow}%`;
+
+    /* KDIGO CGA grid update */
+    updateKdigoGrid(inp.egfr, inp.uacr);
+
+    /* Story text */
+    updateStoryText(inp);
+
+    /* ── Projections — 3 paths ── */
+    const egfrCurrent = egfrProjection(inp.egfr,{
+      age:inp.age,sbp:inp.sbp,diabetes:inp.diabetes,a1c:inp.a1c,smoker:inp.smoker,bmi:inp.bmi,
+      population:inp.population,uacr:inp.uacr,egfr:inp.egfr,bpControlled:inp.bpControlled,
+      onACEi:inp.onACEi,onSGLT2i:inp.onSGLT2i,onMRA:inp.onMRA,onSema:inp.onSema });
+
+    const simSBP   = dom.sim_controlBP.checked  ? Math.min(inp.sbp,125) : inp.sbp;
+    const simA1c   = (inp.diabetes&&dom.sim_controlA1c.checked) ? Math.min(inp.a1c,7.0) : inp.a1c;
+    const simSmk   = dom.sim_stopSmoker.checked ? false : inp.smoker;
+    const simSGLT2i= dom.sim_onSGLT2i.checked  ? true  : inp.onSGLT2i;
+    const simStatin= dom.sim_onStatin.checked   ? true  : inp.statin;
+    const simMRA   = dom.sim_onMRA.checked      ? true  : inp.onMRA;
+    const simSema  = dom.sim_onSema.checked     ? true  : inp.onSema;
+
+    const egfrSim = egfrProjection(inp.egfr,{
+      age:inp.age,sbp:simSBP,diabetes:inp.diabetes,a1c:simA1c,smoker:simSmk,bmi:inp.bmi,
+      population:inp.population,uacr:inp.uacr,egfr:inp.egfr,bpControlled:dom.sim_controlBP.checked,
+      onACEi:inp.onACEi,onSGLT2i:simSGLT2i,onMRA:simMRA,onSema:simSema });
+
+    const egfrOpt = egfrProjection(inp.egfr,{
+      age:inp.age,sbp:123,diabetes:inp.diabetes,a1c:inp.diabetes?6.8:inp.a1c,smoker:false,
+      bmi:Math.min(inp.bmi,inp.population==='asian'?23:25),population:inp.population,uacr:inp.uacr,
+      egfr:inp.egfr,bpControlled:true,onACEi:true,onSGLT2i:true,
+      onMRA:inp.diabetes?true:inp.onMRA,onSema:inp.diabetes?true:inp.onSema });
+
+    const cvdCurrent = cvdProjection(baseCVDParams, egfrCurrent);
+    const cvdSimParams = {...baseCVDParams,sbp:simSBP,smoker:simSmk,statin:simStatin,
+      onSGLT2i:simSGLT2i,onMRA:simMRA,onSema:simSema,bpControlled:dom.sim_controlBP.checked};
+    const cvdSim  = cvdProjection(cvdSimParams, egfrSim);
+    const cvdOptParams = {...baseCVDParams,sbp:123,smoker:false,onACEi:true,statin:true,
+      onSGLT2i:true,onMRA:inp.diabetes?true:baseCVDParams.onMRA,onSema:inp.diabetes?true:baseCVDParams.onSema,bpControlled:true};
+    const cvdOpt  = cvdProjection(cvdOptParams, egfrOpt);
+
+    const mortCurrent = mortProjection(baseCVDParams, egfrCurrent, cvdCurrent);
+    const mortSim     = mortProjection(cvdSimParams,  egfrSim,     cvdSim);
+    const mortOpt     = mortProjection(cvdOptParams,  egfrOpt,     cvdOpt);
+
+    state._egfr={c:egfrCurrent,s:egfrSim,o:egfrOpt};
+    state._cvd ={c:cvdCurrent, s:cvdSim, o:cvdOpt};
+    state._mort={c:mortCurrent,s:mortSim,o:mortOpt};
+
+    egfrChart.data.datasets[0].data=egfrCurrent; egfrChart.data.datasets[1].data=egfrSim; egfrChart.data.datasets[2].data=egfrOpt; egfrChart.update();
+    cvdChart.data.datasets[0].data=cvdCurrent;   cvdChart.data.datasets[1].data=cvdSim;   cvdChart.data.datasets[2].data=cvdOpt;   autoScaleRisk(cvdChart);  cvdChart.update();
+    mortChart.data.datasets[0].data=mortCurrent; mortChart.data.datasets[1].data=mortSim; mortChart.data.datasets[2].data=mortOpt; autoScaleRisk(mortChart); mortChart.update();
+
+    const sC=chronicSlope(egfrCurrent), sS=chronicSlope(egfrSim), sO=chronicSlope(egfrOpt);
+    const tC=yearsToESKD(inp.egfr,sC), tS=yearsToESKD(inp.egfr,sS), tO=yearsToESKD(inp.egfr,sO);
+    eskdLineChart.data.datasets[0].data=declineLine(inp.egfr,sC);
+    eskdLineChart.data.datasets[1].data=declineLine(inp.egfr,sS);
+    eskdLineChart.data.datasets[2].data=declineLine(inp.egfr,sO);
+    eskdLineChart.options.scales.y.max=Math.max(60,Math.ceil((inp.egfr+5)/10)*10);
+    eskdLineChart.update();
+    const eskd={cur:tC,sim:tS,opt:tO};
+    state._eskd=eskd;
+    renderEskdBars(eskd);
+
+    return { age:inp.age,sex:inp.sex,egfr:inp.egfr,egfrStage:inp.egfrStage,uacr:inp.uacr,
+      kfre2:inp.kfre2,kfre5:inp.kfre5,cvd10:cvdNow,mort10:mortNow,simSBP,simA1c,
+      onACEi:inp.onACEi,onSGLT2i:inp.onSGLT2i,onMRA:inp.onMRA,onStatin:inp.statin,onSema:inp.onSema,
+      eskdCur:Math.min(tC,ESKD_HORIZON),eskdSim:Math.min(tS,ESKD_HORIZON),eskdOpt:Math.min(tO,ESKD_HORIZON) };
+  }
+
+  /* ── Story text ── */
+  function updateStoryText(inp){
+    const bmiCat   = bmiCategory(inp.bmi,inp.population).toLowerCase();
+    const smokeTxt = inp.smoker ? 'currently smokes' : 'non-smoker';
+    const bpTxt    = inp.bpControlled ? 'controlled' : 'uncontrolled';
+    const acrTxt   = inp.uacr>=300 ? `severely increased albuminuria (UACR ${inp.uacr} mg/g — A3)`
+                   : inp.uacr>=30  ? `moderately increased albuminuria (UACR ${inp.uacr} mg/g — A2)`
+                   : `normal albuminuria (UACR ${inp.uacr} mg/g — A1)`;
+    const meds = [
+      inp.onACEi   ? 'ACEi/ARB' : '',
+      inp.onSGLT2i ? 'SGLT2i'   : '',
+      inp.onMRA    ? 'finerenone (MRA)' : '',
+      inp.statin   ? 'statin'   : '',
+      inp.onSema   ? 'semaglutide' : '',
+    ].filter(Boolean).join(', ') || 'no cardiorenal agents';
+
+    const who  = state.profile==='arjun' ? `Arjun is a ${inp.age}-year-old man` : `Meera is a ${inp.age}-year-old woman`;
+    const pron = state.profile==='arjun' ? 'He' : 'She';
+    dom.story.textContent = `${who} from Pune with ${bmiCat} BMI (${inp.bmi} kg/m²). ${pron} is a ${smokeTxt} with ${bpTxt} blood pressure (SBP ${inp.sbp} mmHg). Kidney function (CKD-EPI 2021): eGFR ${inp.egfr} mL/min [${inp.egfrStage}]; ${acrTxt}. Current medications: ${meds}.`;
+  }
+
+  /* ── Patient profiles ── */
+  function applyProfile(p){
+    state.profile=p;
+    dom.cardArjun.classList.toggle('btn-tab-active',p==='arjun');
+    dom.cardMeera.classList.toggle('btn-tab-active',p==='meera');
+    if(p==='arjun'){
+      dom.sex.value='male';
+      dom.ageNum.value=35; dom.heightNum.value=173; dom.weightNum.value=76;
+      dom.creatinineNum.value=1.05; dom.uacrNum.value=50; dom.sbpNum.value=132; dom.a1cNum.value=5.8;
+      dom.tcNum.value=190; dom.hdlNum.value=48;
+      dom.diabetes.checked=false; dom.hypertension.checked=true; dom.smoker.checked=false; dom.bpControl.checked=true;
+      dom.acei.checked=true; dom.sglt2i.checked=false; dom.mra.checked=false; dom.statin.checked=false; dom.sema.checked=false;
+    } else {
+      dom.sex.value='female';
+      dom.ageNum.value=41; dom.heightNum.value=162; dom.weightNum.value=84;
+      dom.creatinineNum.value=1.00; dom.uacrNum.value=250; dom.sbpNum.value=146; dom.a1cNum.value=7.8;
+      dom.tcNum.value=210; dom.hdlNum.value=40;
+      dom.diabetes.checked=true; dom.hypertension.checked=true; dom.smoker.checked=false; dom.bpControl.checked=false;
+      dom.acei.checked=true; dom.sglt2i.checked=true; dom.mra.checked=true; dom.statin.checked=true; dom.sema.checked=false;
+    }
+    ['sim_stopSmoker','sim_controlBP','sim_controlA1c','sim_onStatin','sim_onSGLT2i','sim_onMRA','sim_onSema']
+      .forEach(id=>{ if($(id)) $(id).checked=false; });
+    computeAndRender();
+  }
+
+  function computeAndRender(){ state.lastSnapshot=updateUIandCharts(); }
+
+  /* ── Theme ── */
+  function setTheme(mode){
+    const root=document.documentElement;
+    if(mode==='light'){ root.classList.remove('dark'); root.classList.add('light'); document.body.classList.add('light'); dom.themeToggle.textContent='☾ Dark'; }
+    else { root.classList.remove('light'); root.classList.add('dark'); document.body.classList.remove('light'); dom.themeToggle.textContent='☀ Light'; }
+    state.theme=mode; recolorCharts();
+  }
+
+  /* ── Popover ── */
+  const popover=$('popover');
+  function showPopover(target,text){
+    popover.style.display='block'; popover.innerText=text;
+    const rect=target.getBoundingClientRect();
+    const top=rect.top+window.scrollY-10;
+    const left=Math.max(10,rect.left+window.scrollX-100);
+    popover.style.top=`${top}px`; popover.style.left=`${left}px`;
+    popover.setAttribute('aria-hidden','false');
+    // Flip below if too close to top
+    requestAnimationFrame(()=>{
+      if(rect.top<popover.offsetHeight+20){
+        popover.style.top=`${rect.bottom+window.scrollY+8}px`;
+      } else {
+        popover.style.top=`${rect.top+window.scrollY-popover.offsetHeight-8}px`;
+      }
+    });
+  }
+  function hidePopover(){ popover.style.display='none'; popover.setAttribute('aria-hidden','true'); }
+
+  /* ── Export ── */
+  function exportCSV(){
+    const inp=state.lastSnapshot||{};
+    const rows=[];
+    rows.push(['Profile','Age','Sex','eGFR','eGFR_stage','UACR','KFRE_2yr_pct','KFRE_5yr_pct',
+      'CVD_10yr_pct_PREVENT','Mortality_10yr_pct_modelled',
+      'ESKDfree_cur_yr','ESKDfree_sim_yr','ESKDfree_opt_yr',
+      'On_ACEi','On_SGLT2i','On_MRA','On_Statin','On_Semaglutide'].join(','));
+    rows.push([state.profile,inp.age,inp.sex,inp.egfr,inp.egfrStage,inp.uacr,inp.kfre2,inp.kfre5,inp.cvd10,inp.mort10,
+      inp.eskdCur!==undefined?round(inp.eskdCur,1):'',inp.eskdSim!==undefined?round(inp.eskdSim,1):'',inp.eskdOpt!==undefined?round(inp.eskdOpt,1):'',
+      inp.onACEi?1:0,inp.onSGLT2i?1:0,inp.onMRA?1:0,inp.onStatin?1:0,inp.onSema?1:0].join(','));
+    rows.push('');
+    rows.push('Year,eGFR_cur,eGFR_sim,eGFR_opt,CVD_cur,CVD_sim,CVD_opt,Mort_cur,Mort_sim,Mort_opt');
+    const e=state._egfr,c=state._cvd,m=state._mort;
+    for(let i=0;i<6;i++){ rows.push([`${i}y`,e.c[i],e.s[i],e.o[i],c.c[i],c.s[i],c.o[i],m.c[i],m.s[i],m.o[i]].join(',')); }
+    rows.push('');
+    rows.push('"NOTE: KFRE from Tangri et al JAMA 2016 (4-var). CVD from AHA PREVENT Khan 2024 Circulation. eGFR CKD-EPI 2021 Inker NEJM. All-cause mortality is a pedagogical composite not a validated score."');
+    const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`cardiorenal_${state.profile}_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  async function exportPDF(){
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
+    const inp=state.lastSnapshot||{};
+    doc.setFontSize(17); doc.setFont(undefined,'bold');
+    doc.text('Cardiorenal Compass — Patient Snapshot',30,38);
+    doc.setFontSize(11); doc.setFont(undefined,'normal');
+    doc.text(`Generated: ${new Date().toLocaleString()}  |  Profile: ${state.profile==='arjun'?'Arjun (35M)':'Meera (41F)'}`,30,56);
+    doc.setDrawColor(14,165,233); doc.setLineWidth(0.8); doc.line(30,62,565,62);
+    doc.setFontSize(11);
+    doc.text(`Age: ${inp.age}   Sex: ${inp.sex}   eGFR: ${inp.egfr} [${inp.egfrStage}]   UACR: ${inp.uacr} mg/g`,30,80);
+    doc.text(`KFRE 2-yr: ${inp.kfre2}%   KFRE 5-yr: ${inp.kfre5}%`,30,98);
+    doc.text(`10-yr CVD (AHA PREVENT 2024): ${inp.cvd10}%   10-yr mortality (modelled): ${inp.mort10}%`,30,116);
+    doc.text(`SGLT2i: ${inp.onSGLT2i?'Yes':'No'}  MRA: ${inp.onMRA?'Yes':'No'}  ACEi/ARB: ${inp.onACEi?'Yes':'No'}  Statin: ${inp.onStatin?'Yes':'No'}  Semaglutide: ${inp.onSema?'Yes':'No'}`,30,134);
+    doc.addImage(dom.egfrCanvas.toDataURL('image/png',1.0),'PNG',30,148,386,128);
+    doc.addImage(dom.cvdCanvas.toDataURL('image/png',1.0),'PNG',30,290,386,128);
+    doc.addImage(dom.mortCanvas.toDataURL('image/png',1.0),'PNG',30,432,386,128);
+    doc.setFontSize(8); doc.setTextColor(120,120,120);
+    doc.text('eGFR: CKD-EPI 2021 (Inker NEJM 2021). KFRE: Tangri JAMA 2016. CVD: AHA PREVENT (Khan Circulation 2024). Mortality: pedagogical composite — not a validated instrument.',30,575,{maxWidth:500});
+    doc.text('Educational simulation only. Not medical advice. Drug effects estimated from FLOW, CREDENCE, EMPA-KIDNEY, FIDELIO-DKD, FIGARO-DKD.',30,589,{maxWidth:500});
+    doc.save(`cardiorenal_${state.profile}_${new Date().toISOString().slice(0,10)}.pdf`);
+  }
+
+  /* ── Wire everything up ── */
+  document.addEventListener('DOMContentLoaded',()=>{
+    initCharts();
+    attachKpiHover(dom.barEgfr,dom.tipEgfr);
+    attachKpiHover(dom.barKFRE2,dom.tipKFRE2);
+    attachKpiHover(dom.barKFRE5,dom.tipKFRE5);
+    attachKpiHover(dom.barCVD,dom.tipCVD);
+    attachKpiHover(dom.barMort,dom.tipMort);
+
+    dom.cardArjun.addEventListener('click',()=>applyProfile('arjun'));
+    dom.cardMeera.addEventListener('click',()=>applyProfile('meera'));
+
+    document.querySelectorAll('input[type="range"],input[type="number"],input[type="checkbox"],select')
+      .forEach(el=>{ el.addEventListener('input',computeAndRender); el.addEventListener('change',computeAndRender); });
+
+    document.querySelectorAll('.info-dot').forEach(dot=>{
+      dot.addEventListener('mouseenter',()=>showPopover(dot,dot.dataset.info));
+      dot.addEventListener('mouseleave',hidePopover);
+    });
+
+    dom.exportCSV.addEventListener('click',exportCSV);
+    dom.exportPDF.addEventListener('click',exportPDF);
+    dom.themeToggle.addEventListener('click',()=>setTheme(state.theme==='dark'?'light':'dark'));
+
+    applyProfile('arjun');
+    setTheme('dark');
+  });
+</script>
 </body>
 </html>
