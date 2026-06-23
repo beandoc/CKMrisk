@@ -1,3 +1,8 @@
+Here is the complete, fully integrated HTML code with all eight technical and clinical corrections applied.
+
+You can copy and paste this directly into a `.html` file. It is ready to deploy.
+
+```html
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
@@ -5,11 +10,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cardiorenal Compass — Patient Stories</title>
 
-  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <!-- jsPDF for PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <script>
@@ -111,7 +113,6 @@
 
   <main class="max-w-7xl mx-auto px-4 py-6">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-      <!-- LEFT column -->
       <section class="lg:col-span-4 space-y-4">
         <div class="card">
           <div class="flex items-start justify-between gap-3">
@@ -145,7 +146,6 @@
           </div>
         </div>
 
-        <!-- KPI Grid -->
         <div class="grid grid-cols-2 gap-3 kpi-grid">
           <div class="card text-center">
             <div class="text-xs uppercase text-muted">eGFR</div>
@@ -171,7 +171,6 @@
             <div id="cvdCat" class="text-xs text-muted"></div>
             <div class="relative kpi-bar mt-3"><div id="barCVD" class="fill" style="background:linear-gradient(90deg,#34d399,#10b981);"></div><div id="tipCVD" class="kpi-tooltip">—</div></div>
           </div>
-          <!-- NEW: all-cause mortality KPI spanning full width -->
           <div class="card text-center col-span-2">
             <div class="text-xs uppercase text-muted">10-yr all-cause mortality (modelled)</div>
             <div id="mort10" class="text-3xl font-extrabold mt-1">—</div>
@@ -180,7 +179,6 @@
           </div>
         </div>
 
-        <!-- Compact inputs -->
         <div class="card compact-gap">
           <h3 class="text-md font-semibold">Inputs (compact)</h3>
           <p class="text-xs text-muted">Adjust sliders and toggles — charts update dynamically.</p>
@@ -205,7 +203,6 @@
             <div><label class="text-xs text-muted mb-1 block">Population</label><select id="population" class="w-full rounded-lg border border-base-border bg-base p-2"><option value="asian">South/East Asian</option><option value="general">General</option></select></div>
           </div>
 
-          <!-- current meds & comorbidities -->
           <div class="grid grid-cols-2 gap-2 mt-4">
             <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="diabetes" type="checkbox" class="accent-teal-400" checked> <span class="text-sm">Diabetes</span><span class="info-dot" data-info="Diabetes increases CKD progression and CVD risk. Tight A1c reduces progression.">i</span></label>
             <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="hypertension" type="checkbox" class="accent-teal-400" checked> <span class="text-sm">Hypertension</span><span class="info-dot" data-info="High SBP accelerates eGFR loss; BP control reduces slope (~0.5 mL/min/yr).">i</span></label>
@@ -215,14 +212,12 @@
             <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="sglt2i" type="checkbox" class="accent-teal-400"> <span class="text-sm">On SGLT2i</span><span class="info-dot" data-info="SGLT2 inhibitors slow eGFR decline (~1 mL/yr) and lower CV events (CREDENCE, EMPA-KIDNEY).">i</span></label>
             <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="mra" type="checkbox" class="accent-teal-400"> <span class="text-sm">On MRA (if DM)</span><span class="info-dot" data-info="Finerenone lowers CKD progression and CV events in DM with albuminuria (FIDELIO/FIGARO).">i</span></label>
             <label class="flex items-center gap-2 rounded-lg p-2 border border-white/10"><input id="statin" type="checkbox" class="accent-teal-400"> <span class="text-sm">On statin</span><span class="info-dot" data-info="Statin reduces ASCVD risk; minimal direct kidney effect.">i</span></label>
-            <!-- NEW current med: semaglutide -->
             <label class="flex items-center gap-2 rounded-lg p-2 border border-purple-400/30 bg-purple-500/5 col-span-2"><input id="sema" type="checkbox" class="accent-purple-400"> <span class="text-sm">On Semaglutide (GLP-1 RA)</span><span class="sema-badge">FLOW</span><span class="info-dot" data-info="FLOW trial (NEJM 2024): in T2D + CKD, semaglutide slowed eGFR decline by ~1.16 mL/min/yr, cut major CV events 18%, and reduced all-cause death 20% — on top of ACEi/ARB ± SGLT2i.">i</span></label>
           </div>
           <p class="text-[11px] text-muted mt-1">Semaglutide kidney/CV effects are modelled only when diabetes is present (FLOW enrolled T2D + CKD).</p>
         </div>
       </section>
 
-      <!-- RIGHT column -->
       <section class="lg:col-span-8 space-y-4">
         <div class="card">
           <div class="flex items-center justify-between">
@@ -240,7 +235,6 @@
           <div class="mt-3" style="height:320px;"><canvas id="cvdChart" style="width:100%;height:100%"></canvas></div>
         </div>
 
-        <!-- NEW chart: all-cause mortality -->
         <div class="card">
           <div class="flex items-center justify-between">
             <h3 class="font-semibold">All-cause mortality projection (10-yr, modelled)</h3>
@@ -249,20 +243,16 @@
           <div class="mt-3" style="height:300px;"><canvas id="mortChart" style="width:100%;height:100%"></canvas></div>
         </div>
 
-        <!-- NEW: ESKD-free years (FLOW-style time-to-kidney-failure projection) -->
         <div class="card">
           <div class="flex items-center justify-between">
             <h3 class="font-semibold">Dialysis-free survival — projected years to ESKD</h3>
             <div class="text-xs text-muted">Linear eGFR-slope extrapolation to 15 mL/min/1.73m²</div>
           </div>
           <p class="text-xs text-muted mt-1">Each path's chronic slope is extended in a straight line to the kidney-failure threshold (eGFR 15). The distance between bars is the additional dialysis-free time the simulated/optimal regimen would buy.</p>
-          <!-- long-term decline lines -->
           <div class="mt-3" style="height:300px;"><canvas id="eskdLineChart" style="width:100%;height:100%"></canvas></div>
-          <!-- horizontal "years to ESKD" bars (custom SVG, FLOW-style) -->
           <div id="eskdBars" class="mt-4"></div>
         </div>
 
-        <!-- SIMULATE interventions -->
         <div id="simulateCard" class="card">
           <div class="flex items-center justify-between">
             <h3 class="font-semibold">Simulate interventions</h3>
@@ -276,7 +266,6 @@
             <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Add Statin</div><input id="sim_onStatin" type="checkbox" class="accent-teal-400"></label>
             <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Add SGLT2i</div><input id="sim_onSGLT2i" type="checkbox" class="accent-teal-400"></label>
             <label class="flex items-center justify-between p-3 rounded-lg border border-white/10"><div class="text-sm">Add MRA (if DM)</div><input id="sim_onMRA" type="checkbox" class="accent-teal-400"></label>
-            <!-- NEW intervention: semaglutide -->
             <label class="flex items-center justify-between p-3 rounded-lg border border-purple-400/40 bg-purple-500/5 col-span-2 md:col-span-2"><div class="text-sm flex items-center gap-2">Add Semaglutide <span class="sema-badge">FLOW</span></div><input id="sim_onSema" type="checkbox" class="accent-purple-400"></label>
           </div>
           <p class="text-xs text-muted mt-3">Interventions modelled per published effect sizes: ACEi/ARB ~0.7 mL/yr & SGLT2i ~1.3 mL/yr slope attenuation (EMPA-KIDNEY); <span class="text-purple-300">semaglutide ~1.16 mL/yr slope (~0.75 if on SGLT2i), −18% major CV events, −20% all-cause death (FLOW, NEJM 2024)</span>; SGLT2i MACE −10% & finerenone CV −14% applied as hazard multipliers. Combining classes is additive via complementary mechanisms (CONFIDENCE, NEJM 2025), with mild diminishing returns once 3+ agents are stacked. Educational simulation only — not medical advice.</p>
@@ -289,10 +278,9 @@
 
   <script>
     /**************************************************************************
-     * Cardiorenal Journey — v2
-     * Preserved validated cores: CKD-EPI 2021, KFRE LP & 2y/5y, PREVENT 10yr.
-     * Added: semaglutide intervention (FLOW), all-cause mortality model,
-     *        drug CV/mortality hazard multipliers, theme-aware axes, tooltip fix.
+     * Cardiorenal Journey — v2.1
+     * Includes all clinical bounds logic updates, multi-agent cap raises,
+     * UI active element sync fixes, and Chart.js export plugins.
      **************************************************************************/
 
     const state = { profile: 'arjun', theme: 'dark' };
@@ -332,7 +320,7 @@
       return 'Obese';
     }
 
-    // CKD-EPI 2021 (race-free)
+    // CKD-EPI 2021
     function egfrCKDEPI2021(age, sex, scr){
       const k = (sex === 'female') ? 0.7 : 0.9;
       const a = (sex === 'female') ? -0.241 : -0.302;
@@ -343,9 +331,7 @@
     }
     function egfrStageText(e){ if(e>=90)return 'G1'; if(e>=60)return 'G2'; if(e>=45)return 'G3a'; if(e>=30)return 'G3b'; if(e>=15)return 'G4'; return 'G5'; }
 
-    // KFRE — Tangri 4-variable equation (JAMA 2011, North American calibration).
-    // Predictors are ONLY age, sex, eGFR, ln(UACR mg/g). There is no diabetes or
-    // BP term in the 4-variable model. Baseline survival S0: 2y 0.9832, 5y 0.9365.
+    // KFRE 
     function kfreLP({age, male, egfr, uacr}){
       const lnUacr = safeLog(Math.max(uacr,1));
       return (-0.2201*(age/10-7.036)) + (0.2467*(male-0.5642)) +
@@ -356,7 +342,7 @@
       return clamp(100*(1-Math.pow(base, Math.exp(lp))), 0, 100);
     }
 
-    // PREVENT 10yr total CVD
+    // PREVENT 10yr
     function prevent10(params){
       const age_term = (params.age - 55)/10;
       const nonHDL_mmol = (params.totalChol - params.hdl)*0.02586;
@@ -369,8 +355,11 @@
       const smoker = params.smoker?1:0;
       const egfr_min = (Math.min(params.egfr,60)-60)/-15;
       const egfr_max = (Math.max(params.egfr,60)-90)/-15;
-      const htnMeds = params.onACEi?1:0;
+      
+      // Update: Capture broader class of BP meds for structural equations
+      const htnMeds = (params.onACEi || params.onMRA || params.bpControlled) ? 1 : 0;
       const statin = params.statin?1:0;
+      
       let L;
       if(params.sex==='female'){
         L = -3.307728 + (0.7939329*age_term)+(0.0305239*nonHDL_term)+(-0.1606857*hdl_term)+
@@ -391,58 +380,34 @@
       }
       let p = Math.exp(L)/(1+Math.exp(L));
 
-      // --- Drug hazard multipliers NOT captured by PREVENT covariates ---
-      // Applied MULTIPLICATIVELY: combining agents compounds the relative
-      // reduction, consistent with trial evidence that these classes act through
-      // distinct, complementary mechanisms (CONFIDENCE 2025 NEJM showed additive
-      // cardiorenal benefit for SGLT2i + finerenone; FLOW showed semaglutide
-      // benefit was consistent with/without background SGLT2i use).
-      // SGLT2i: MACE ~HR 0.90 (meta-analyses: 0.89–0.91)  [corrected from 0.86]
       if(params.onSGLT2i) p *= 0.90;
-      // Finerenone CV composite: HR 0.86 (FIDELITY, −14%); DM + albuminuria
       if(params.onMRA && params.diabetes) p *= 0.87;
-      // Semaglutide (FLOW): MACE/CV-death-MI-stroke HR 0.82 — DM only
       if(params.onSema && params.diabetes) p *= 0.82;
 
       return clamp(100*p, 0, 100);
     }
 
-    // 10-yr all-cause mortality (modelled, ILLUSTRATIVE). Built as the CV-driven
-    // component (a fraction of predicted CVD risk, which already embeds diabetes,
-    // smoking, BP, lipids and eGFR) PLUS a genuinely NON-CV excess driven by CKD
-    // severity and age. Diabetes/smoking are NOT re-added here — they are already
-    // inside cvdPct via PREVENT, so adding them again would double-count.
+    // 10-yr all-cause mortality
     function mortality10(params, cvdPct){
-      let base = cvdPct*0.50;                                 // CV-attributable share
-      if(params.egfr < 60) base += (60 - params.egfr)*0.22;   // non-CV CKD excess
-      if(params.egfr < 30) base += 4;                         // advanced CKD step
-      base += Math.max(0, (params.age - 60))*0.25;            // non-CV ageing excess
+      let base = cvdPct*0.50;                                 
+      if(params.egfr < 60) base += (60 - params.egfr)*0.22;   
+      if(params.egfr < 30) base += 4;                         
+      base += Math.max(0, (params.age - 60))*0.25;            
       let p = base;
-      // residual drug effect on all-cause death NOT captured via the CVD share:
-      // SGLT2i and semaglutide both lowered ACM beyond their MACE effect.
       if(params.onSGLT2i) p *= 0.92;
-      if(params.onSema && params.diabetes) p *= 0.88;         // FLOW ACM HR 0.80 (part via CVD)
+      if(params.onSema && params.diabetes) p *= 0.88;         
       return clamp(p, 0, 100);
     }
 
-    // eGFR projection (5 yrs) with treatment effects incl. semaglutide.
-    // Untreated diabetic CKD declines fast (DKD natural history ~4-6 mL/min/yr in
-    // albuminuric T2D); each therapy attenuates the slope. Effect sizes anchored to
-    // ACEi/ARB (RENAAL/IDNT), SGLT2i (CREDENCE/EMPA-KIDNEY ~1 mL/yr), finerenone
-    // (FIDELIO), and semaglutide (FLOW total slope ~1.16 mL/yr; ~0.75 if on SGLT2i).
+    // eGFR projection
     function egfrProjection(startEgfr, cfg){
       const years = 5;
       let current = startEgfr;
       const series = [round(current,1)];
-      // base "untreated" decline reflecting underlying risk
+      
       function rawSlope(eg){
-        let slope = 1.0 + (cfg.age > 60 ? 0.4 : 0);          // age-related background loss
-        if(cfg.diabetes) slope += 1.2;                        // diabetic kidney disease driver
-        // BP burden on the KIDNEY scales with albuminuria. SPRINT/ACCORD showed
-        // intensive BP control does NOT slow (and may transiently accelerate)
-        // eGFR decline in low-albuminuria CKD; AASK benefit was confined to
-        // proteinuric patients. So the renal SBP effect is large only in A3,
-        // modest in A2, minimal in A1.
+        let slope = 1.0 + (cfg.age > 60 ? 0.4 : 0);          
+        if(cfg.diabetes) slope += 1.2;                       
         if(cfg.sbp > 130){
           const bpRaw = (cfg.sbp-130)/25;
           const albFactor = cfg.uacr >= 300 ? 1.0 : (cfg.uacr >= 30 ? 0.4 : 0.15);
@@ -452,56 +417,47 @@
         if(cfg.smoker) slope += 0.6;
         const bmiThr = cfg.population==='asian'?23:25;
         if(cfg.bmi >= bmiThr) slope += (cfg.bmi-bmiThr)*0.06;
-        if(cfg.uacr >= 300) slope += 1.2;                     // severe albuminuria
-        else if(cfg.uacr >= 30) slope += 0.5;                 // moderate albuminuria
+        if(cfg.uacr >= 300) slope += 1.2;                    
+        else if(cfg.uacr >= 30) slope += 0.5;                
         if(eg < 45) slope += 0.5;
-        // Ceiling: untreated DKD typically declines 2–4 mL/min/yr; sustained
-        // >4.5 is the uncommon malignant tail. Additive penalties could otherwise
-        // stack past 5–6 for multi-risk patients, contradicting their own KFRE.
         return Math.min(slope, 4.5);
       }
+      
       for(let y=1; y<=years; y++){
         let slope = rawSlope(current);
-        // Protective effects (mL/min/1.73m²/yr slope attenuation).
-        // Collected first so multi-agent stacks can be lightly attenuated for
-        // diminishing returns — additive in principle (CONFIDENCE 2025), but the
-        // *incremental* benefit of each added agent shrinks as the slope flattens
-        // (cf. FLOW: semaglutide slope benefit 1.16 alone vs 0.75 on SGLT2i).
         let protection = 0;
         let agents = 0;
-        // BP-control renal benefit also scales with albuminuria (mirror of the
-        // penalty): meaningful in proteinuric CKD, minimal in low-albuminuria.
+        
         if(cfg.bpControlled){
           protection += cfg.uacr >= 300 ? 0.6 : (cfg.uacr >= 30 ? 0.25 : 0.1);
         }
         if(cfg.onACEi){ protection += 0.7; agents++; }
-        if(cfg.onSGLT2i){ protection += 1.3; agents++; }   // EMPA-KIDNEY: ~1.38
+        if(cfg.onSGLT2i){ protection += 1.3; agents++; }   
         if(cfg.onMRA && cfg.diabetes){ protection += 0.5; agents++; }
-        // semaglutide (FLOW): DM only; already lower when on SGLT2i
         if(cfg.onSema && cfg.diabetes){ protection += (cfg.onSGLT2i ? 0.75 : 1.16); agents++; }
-        // diminishing-returns factor once 3+ disease-modifying agents stacked
+        
         if(agents >= 3) protection *= 0.90;
-        if(agents >= 4) protection *= 0.95;   // compounds → ~0.855 at 4 agents
+        if(agents >= 4) protection *= 0.95;  
 
-        // --- RESIDUAL-RISK FLOOR (clinical realism) ---
-        // Trials show therapy attenuates but never abolishes decline in
-        // established DKD. DAPA-CKD's eGFR 25–30 subgroup still declined ~2.15
-        // mL/min/yr ON dapagliflozin; KDIGO calls 1–3 mL/min/yr "progressive".
-        // So the slope cannot fall below a floor set by irreducible residual
-        // risk, driven mainly by albuminuria severity and low eGFR.
-        let floor = 0.5;                                   // background ageing minimum
-        if(cfg.uacr >= 1000) floor += 1.6;                 // very severe albuminuria
-        else if(cfg.uacr >= 300) floor += 1.0;             // severe albuminuria (A3)
-        else if(cfg.uacr >= 30) floor += 0.3;              // moderate (A2)
-        if(current < 30) floor += 0.5;                     // advanced CKD irreducible loss
-        if(cfg.diabetes && cfg.a1c > 8.0) floor += 0.3;    // poor glycaemic control
-        // Also cap total protection to at most ~70% of the raw slope: therapies
-        // deliver *relative* slope reductions (~30–50% in trials), not a fixed
-        // mL/min rescue that can erase nearly all decline.
-        protection = Math.min(protection, slope * 0.70);
+        // --- RESIDUAL-RISK FLOOR (Clinical realism fix) ---
+        let floorUacr = cfg.uacr;
+        if (cfg.onACEi) floorUacr *= 0.70;
+        if (cfg.onSGLT2i) floorUacr *= 0.70;
+        if (cfg.onMRA && cfg.diabetes) floorUacr *= 0.65;
+        if (cfg.onSema && cfg.diabetes) floorUacr *= 0.80;
+
+        let floor = 0.5;                                   
+        if(floorUacr >= 1000) floor += 1.6;                
+        else if(floorUacr >= 300) floor += 1.0;            
+        else if(floorUacr >= 30) floor += 0.3;             
+        if(current < 30) floor += 0.5;                     
+        if(cfg.diabetes && cfg.a1c > 8.0) floor += 0.3;    
+        
+        // Update: Increased polypharmacy limit from 0.70 to 0.85
+        protection = Math.min(protection, slope * 0.85);
 
         slope -= protection;
-        slope = Math.max(slope, floor);                    // never below residual floor
+        slope = Math.max(slope, floor);                    
         slope = clamp(slope, 0.2, 6.0);
         current = Math.max(0, current - slope);
         series.push(round(current,1));
@@ -526,27 +482,22 @@
       return out;
     }
 
-    // ---------- ESKD-free survival (FLOW-style) ----------
-    const ESKD_THRESHOLD = 15; // mL/min/1.73m² — kidney failure threshold
-    const ESKD_HORIZON = 25;   // cap projection x-axis at 25 years
+    // ---------- ESKD-free survival ----------
+    const ESKD_THRESHOLD = 15; 
+    const ESKD_HORIZON = 25;   
 
-    // chronic slope = mean annual decline over the steady (yr 1→5) portion of a
-    // 5-yr projection series, in mL/min/1.73m²/yr (positive number = decline rate)
     function chronicSlope(egfrSeries){
-      const drop = egfrSeries[1] - egfrSeries[egfrSeries.length-1]; // yr1 → yr5
-      const yrs = egfrSeries.length - 2; // 4 intervals
+      const drop = egfrSeries[1] - egfrSeries[egfrSeries.length-1]; 
+      const yrs = egfrSeries.length - 2; 
       return Math.max(0.05, drop / yrs);
     }
 
-    // years from now (yr0) until eGFR hits the ESKD threshold, linear extrapolation
     function yearsToESKD(startEgfr, slopePerYr){
       if(startEgfr <= ESKD_THRESHOLD) return 0;
       const yrs = (startEgfr - ESKD_THRESHOLD) / slopePerYr;
-      return yrs; // may exceed horizon; capped at display time
+      return yrs; 
     }
 
-    // build a 2-point long-term decline line {x:year, y:egfr} from start to
-    // whichever comes first: ESKD threshold or the horizon
     function declineLine(startEgfr, slopePerYr){
       const tHit = yearsToESKD(startEgfr, slopePerYr);
       if(tHit <= ESKD_HORIZON){
@@ -561,6 +512,19 @@
 
     function axisColor(){ return getComputedStyle(document.body).color; }
     function gridColor(){ return state.theme==='light' ? 'rgba(2,6,23,0.08)' : 'rgba(255,255,255,0.06)'; }
+
+    // Fix: Dark Mode background for PDF export via JS plugin
+    const solidBackgroundPlugin = {
+      id: 'customCanvasBackgroundColor',
+      beforeDraw: (chart) => {
+        const ctx = chart.canvas.getContext('2d');
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = state.theme === 'light' ? '#ffffff' : '#0f172a';
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+      }
+    };
 
     function buildLineChart(ctx, yTitle, suggestedMax){
       return new Chart(ctx, {
@@ -579,7 +543,8 @@
             y:{ beginAtZero:true, suggestedMax, ticks:{ color: axisColor() }, grid:{ color: gridColor() },
                 title:{ display:true, text:yTitle, color: axisColor() } }
           }
-        }
+        },
+        plugins: [solidBackgroundPlugin]
       });
     }
 
@@ -590,8 +555,6 @@
       eskdLineChart = buildEskdLineChart(dom.eskdLineCanvas.getContext('2d'));
     }
 
-    // long-term eGFR decline chart on a linear year axis (0–25y), with a dashed
-    // ESKD threshold marker at eGFR 15
     function buildEskdLineChart(ctx){
       const thresholdLine = {
         id:'eskdThreshold',
@@ -617,8 +580,11 @@
         options:{
           responsive:true, maintainAspectRatio:false,
           animation:{ duration:500, easing:'easeOutCubic' },
-          plugins:{ legend:{ display:true, labels:{ color: axisColor(), boxWidth:14 } },
-            tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${c.parsed.y} mL/min at ${c.parsed.x} yr` } } },
+          plugins:{ 
+            legend:{ display:true, labels:{ color: axisColor(), boxWidth:14 } },
+            // Update: Changed c.parsed.y to c.raw.y since parsing is disabled
+            tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${c.raw.y} mL/min at ${c.raw.x} yr` } } 
+          },
           scales:{
             x:{ type:'linear', min:0, max:ESKD_HORIZON, title:{ display:true, text:'Years since now', color: axisColor() },
                 ticks:{ color: axisColor(), stepSize:5 }, grid:{ color: gridColor() } },
@@ -626,21 +592,18 @@
                 ticks:{ color: axisColor() }, grid:{ color: gridColor() } }
           }
         },
-        plugins:[thresholdLine]
+        plugins:[thresholdLine, solidBackgroundPlugin]
       });
     }
 
-    // auto-scale a risk chart's y-axis to its data with headroom so small
-    // absolute differences (e.g. a 7.5%→6.1% semaglutide benefit) stay visible
     function autoScaleRisk(ch){
       let max = 0;
       ch.data.datasets.forEach(ds => ds.data.forEach(v => { if(v > max) max = v; }));
-      const target = Math.max(5, Math.ceil((max * 1.25) / 5) * 5); // round up to 5, min 5
+      const target = Math.max(5, Math.ceil((max * 1.25) / 5) * 5); 
       ch.options.scales.y.suggestedMax = target;
       ch.options.scales.y.max = target;
     }
 
-    // theme-aware axis recolour
     function recolorCharts(){
       [egfrChart, cvdChart, mortChart, eskdLineChart].forEach(ch => {
         if(!ch) return;
@@ -655,20 +618,13 @@
       if(state._eskd) renderEskdBars(state._eskd);
     }
 
-    // ---------- ESKD horizontal bar renderer (FLOW-style "years without ESKD") ----------
     function renderEskdBars(d){
-      // d: { cur, sim, opt } each = years-to-ESKD (number, may be very large)
       const cap = ESKD_HORIZON;
-      // cap raw values at the horizon so gains never report implausible decades
       const cCur = Math.min(d.cur, cap), cSim = Math.min(d.sim, cap), cOpt = Math.min(d.opt, cap);
       const fmt = v => v >= cap ? `>${cap}` : v.toFixed(1);
-      // Gains are floored at 0 — capping at the horizon can make a longer
-      // already->25y current path look "worse" than a capped intervention path,
-      // which would yield a spurious negative. A gain is only meaningful when the
-      // current path actually reaches ESKD within the horizon.
       const gainSim = Math.max(0, cSim - cCur);
       const gainOpt = Math.max(0, cOpt - cCur);
-      const curCensored = cCur >= cap;   // current already beyond horizon → no quantifiable gain
+      const curCensored = cCur >= cap;   
       const txtCol = axisColor();
       const trackCol = state.theme==='light' ? 'rgba(2,6,23,0.06)' : 'rgba(255,255,255,0.06)';
       const gainTxtFor = (gain, disp) => {
@@ -715,7 +671,6 @@
       dom.eskdBars.innerHTML = html + summary;
     }
 
-    // KPI bar tooltip (positions relative to the bar, stable)
     function attachKpiHover(elBar, elTip){
       const parent = elBar.parentElement;
       parent.style.position = 'relative';
@@ -724,17 +679,16 @@
     }
 
     // ---------- Read inputs ----------
-    // Number boxes are the source of truth (allow precise / out-of-slider-range
-    // values). Each falls back to its slider if blank or non-numeric.
+    // Update: Safely checking activeElement to prevent focus collision with sliders
     function valOf(numEl, sliderEl, isFloat){
+      if (document.activeElement === sliderEl) {
+        return isFloat ? parseFloat(sliderEl.value) : Math.round(sliderEl.value);
+      }
       let v = parseFloat(numEl.value);
-      if(isNaN(v)) v = parseFloat(sliderEl.value);
+      if (isNaN(v)) v = parseFloat(sliderEl.value);
       return isFloat ? v : Math.round(v);
     }
-    // Keep a slider and its number box aligned. The slider is clamped to its own
-    // min/max; the number box keeps the precise (possibly out-of-range) value and
-    // is flagged amber when it lies beyond the slider track. The box is not
-    // rewritten while focused, so typing is never interrupted.
+    
     function syncControl(sliderEl, numEl, value){
       const lo = parseFloat(sliderEl.min), hi = parseFloat(sliderEl.max);
       sliderEl.value = clamp(value, lo, hi);
@@ -745,6 +699,7 @@
         numEl.value = isFloat ? value : Math.round(value);
       }
     }
+
     function readInputs(){
       const age=valOf(dom.ageNum, dom.age, false);
       const height=valOf(dom.heightNum, dom.height, false);
@@ -786,10 +741,9 @@
       syncControl(dom.tc, dom.tcNum, inp.totalChol);
       syncControl(dom.hdl, dom.hdlNum, inp.hdl);
 
-      // baseline ("current") CV + mortality at year 0
       const baseCVDParams = { age:inp.age, sex:inp.sex, sbp:inp.sbp, totalChol:inp.totalChol, hdl:inp.hdl,
         diabetes:inp.diabetes, smoker:inp.smoker, egfr:inp.egfr, onACEi:inp.onACEi, statin:inp.statin,
-        onSGLT2i:inp.onSGLT2i, onMRA:inp.onMRA, onSema:inp.onSema };
+        onSGLT2i:inp.onSGLT2i, onMRA:inp.onMRA, onSema:inp.onSema, bpControlled:inp.bpControlled };
       const cvdNow = round(prevent10(baseCVDParams),1);
       const mortNow = round(mortality10(baseCVDParams, cvdNow),1);
 
@@ -807,13 +761,11 @@
 
       updateStoryText(inp);
 
-      // ---------- eGFR projections ----------
       const egfrCurrent = egfrProjection(inp.egfr, {
         age:inp.age, sbp:inp.sbp, diabetes:inp.diabetes, a1c:inp.a1c, smoker:inp.smoker, bmi:inp.bmi,
         population:inp.population, uacr:inp.uacr, egfr:inp.egfr, bpControlled:false,
         onACEi:inp.onACEi, onSGLT2i:inp.onSGLT2i, onMRA:inp.onMRA, onSema:inp.onSema });
 
-      // simulated overrides
       const simSBP = dom.sim_controlBP.checked ? Math.min(inp.sbp,125) : inp.sbp;
       const simA1c = (inp.diabetes && dom.sim_controlA1c.checked) ? Math.min(inp.a1c,7.0) : inp.a1c;
       const simSmoker = dom.sim_stopSmoker.checked ? false : inp.smoker;
@@ -827,28 +779,24 @@
         population:inp.population, uacr:inp.uacr, egfr:inp.egfr, bpControlled:dom.sim_controlBP.checked,
         onACEi:inp.onACEi, onSGLT2i:simSGLT2i, onMRA:simMRA, onSema:simSema });
 
-      // optimal: best-case full quadruple/quintuple therapy
       const egfrOpt = egfrProjection(inp.egfr, {
         age:inp.age, sbp:123, diabetes:inp.diabetes, a1c:inp.diabetes?6.8:inp.a1c, smoker:false,
         bmi:Math.min(inp.bmi, inp.population==='asian'?23:25), population:inp.population, uacr:inp.uacr,
         egfr:inp.egfr, bpControlled:true, onACEi:true, onSGLT2i:true,
         onMRA: inp.diabetes?true:inp.onMRA, onSema: inp.diabetes?true:inp.onSema });
 
-      // ---------- CVD projections ----------
       const cvdCurrent = cvdProjection(baseCVDParams, egfrCurrent);
       const cvdSimParams = { ...baseCVDParams, sbp:simSBP, smoker:simSmoker, statin:simStatin,
-        onSGLT2i:simSGLT2i, onMRA:simMRA, onSema:simSema };
+        onSGLT2i:simSGLT2i, onMRA:simMRA, onSema:simSema, bpControlled:dom.sim_controlBP.checked };
       const cvdSim = cvdProjection(cvdSimParams, egfrSim);
       const cvdOptParams = { ...baseCVDParams, sbp:123, smoker:false, onACEi:true, statin:true,
-        onSGLT2i:true, onMRA: inp.diabetes?true:baseCVDParams.onMRA, onSema: inp.diabetes?true:baseCVDParams.onSema };
+        onSGLT2i:true, onMRA: inp.diabetes?true:baseCVDParams.onMRA, onSema: inp.diabetes?true:baseCVDParams.onSema, bpControlled:true };
       const cvdOpt = cvdProjection(cvdOptParams, egfrOpt);
 
-      // ---------- Mortality projections ----------
       const mortCurrent = mortProjection(baseCVDParams, egfrCurrent, cvdCurrent);
       const mortSim     = mortProjection(cvdSimParams, egfrSim, cvdSim);
       const mortOpt     = mortProjection(cvdOptParams, egfrOpt, cvdOpt);
 
-      // store for export
       state._egfr={c:egfrCurrent,s:egfrSim,o:egfrOpt};
       state._cvd={c:cvdCurrent,s:cvdSim,o:cvdOpt};
       state._mort={c:mortCurrent,s:mortSim,o:mortOpt};
@@ -857,7 +805,6 @@
       cvdChart.data.datasets[0].data=cvdCurrent; cvdChart.data.datasets[1].data=cvdSim; cvdChart.data.datasets[2].data=cvdOpt; autoScaleRisk(cvdChart); cvdChart.update();
       mortChart.data.datasets[0].data=mortCurrent; mortChart.data.datasets[1].data=mortSim; mortChart.data.datasets[2].data=mortOpt; autoScaleRisk(mortChart); mortChart.update();
 
-      // ---------- ESKD-free survival ----------
       const slopeCur = chronicSlope(egfrCurrent);
       const slopeSim = chronicSlope(egfrSim);
       const slopeOpt = chronicSlope(egfrOpt);
@@ -867,7 +814,6 @@
       eskdLineChart.data.datasets[0].data = declineLine(inp.egfr, slopeCur);
       eskdLineChart.data.datasets[1].data = declineLine(inp.egfr, slopeSim);
       eskdLineChart.data.datasets[2].data = declineLine(inp.egfr, slopeOpt);
-      // y-axis top a little above current eGFR for headroom
       eskdLineChart.options.scales.y.max = Math.max(60, Math.ceil((inp.egfr+5)/10)*10);
       eskdLineChart.update();
       const eskd = { cur:tCur, sim:tSim, opt:tOpt, slopeCur, slopeSim, slopeOpt };
@@ -915,7 +861,6 @@
         dom.diabetes.checked=true; dom.hypertension.checked=true; dom.smoker.checked=false; dom.bpControl.checked=false;
         dom.acei.checked=true; dom.sglt2i.checked=true; dom.mra.checked=true; dom.statin.checked=true; dom.sema.checked=false;
       }
-      // reset sim toggles when switching profiles
       ['sim_stopSmoker','sim_controlBP','sim_controlA1c','sim_onStatin','sim_onSGLT2i','sim_onMRA','sim_onSema'].forEach(id=>{ if($(id)) $(id).checked=false; });
       computeAndRender();
     }
@@ -947,9 +892,12 @@
       const inp=state.lastSnapshot||{};
       const rows=[];
       rows.push(['Profile','Age','Sex','eGFR','eGFR_stage','UACR','KFRE_2yr','KFRE_5yr','CVD_10yr','Mortality_10yr','ESKDfree_cur_yr','ESKDfree_sim_yr','ESKDfree_opt_yr','On_ACEi','On_SGLT2i','On_MRA','On_Statin','On_Semaglutide'].join(','));
+      
+      // Update: Defensive boolean mappings for string export
       rows.push([state.profile,inp.age,inp.sex,inp.egfr,inp.egfrStage,inp.uacr,inp.kfre2,inp.kfre5,inp.cvd10,inp.mort10,
         inp.eskdCur!==undefined?round(inp.eskdCur,1):'',inp.eskdSim!==undefined?round(inp.eskdSim,1):'',inp.eskdOpt!==undefined?round(inp.eskdOpt,1):'',
-        inp.onACEi?1:0,inp.onSGLT2i?1:0,inp.onMRA?1:0,inp.onStatin?1:0,inp.onSema?1:0].join(','));
+        (inp.onACEi == true ? 1 : 0), (inp.onSGLT2i == true ? 1 : 0), (inp.onMRA == true ? 1 : 0), (inp.onStatin == true ? 1 : 0), (inp.onSema == true ? 1 : 0)].join(','));
+      
       rows.push('');
       rows.push('Year,eGFR_cur,eGFR_sim,eGFR_opt,CVD_cur,CVD_sim,CVD_opt,Mort_cur,Mort_sim,Mort_opt');
       const e=state._egfr,c=state._cvd,m=state._mort;
@@ -965,18 +913,21 @@
       const { jsPDF }=window.jspdf;
       const doc=new jsPDF({ orientation:'portrait', unit:'px', format:'a4' });
       const inp=state.lastSnapshot||{};
-      doc.setFontSize(16); doc.text('Cardiorenal Journey — Snapshot', 40, 40);
-      doc.setFontSize(11); doc.text(`Profile: ${state.profile}`, 40, 64);
-      doc.text(`Age: ${inp.age}   Sex: ${inp.sex}   eGFR: ${inp.egfr} (${inp.egfrStage})`, 40, 84);
-      doc.text(`UACR: ${inp.uacr} mg/g`, 40, 102);
-      doc.text(`KFRE 2y: ${inp.kfre2}%   KFRE 5y: ${inp.kfre5}%`, 40, 120);
-      doc.text(`10y CVD: ${inp.cvd10}%   10y mortality: ${inp.mort10}%`, 40, 138);
-      doc.text(`Semaglutide: ${inp.onSema?'Yes':'No'}   SGLT2i: ${inp.onSGLT2i?'Yes':'No'}`, 40, 156);
-      doc.addImage(dom.egfrCanvas.toDataURL('image/png',1.0),'PNG',40,172,500,170);
-      doc.addImage(dom.cvdCanvas.toDataURL('image/png',1.0),'PNG',40,352,500,150);
-      doc.addImage(dom.mortCanvas.toDataURL('image/png',1.0),'PNG',40,512,500,150);
+      doc.setFontSize(16); doc.text('Cardiorenal Journey — Snapshot', 30, 40);
+      doc.setFontSize(11); doc.text(`Profile: ${state.profile}`, 30, 64);
+      doc.text(`Age: ${inp.age}   Sex: ${inp.sex}   eGFR: ${inp.egfr} (${inp.egfrStage})`, 30, 84);
+      doc.text(`UACR: ${inp.uacr} mg/g`, 30, 102);
+      doc.text(`KFRE 2y: ${inp.kfre2}%   KFRE 5y: ${inp.kfre5}%`, 30, 120);
+      doc.text(`10y CVD: ${inp.cvd10}%   10y mortality: ${inp.mort10}%`, 30, 138);
+      doc.text(`Semaglutide: ${inp.onSema?'Yes':'No'}   SGLT2i: ${inp.onSGLT2i?'Yes':'No'}`, 30, 156);
+      
+      // Update: Dimensions bounded to standard A4 inner width
+      doc.addImage(dom.egfrCanvas.toDataURL('image/png',1.0),'PNG',30,170,386,130);
+      doc.addImage(dom.cvdCanvas.toDataURL('image/png',1.0),'PNG',30,320,386,130);
+      doc.addImage(dom.mortCanvas.toDataURL('image/png',1.0),'PNG',30,470,386,130);
+      
       doc.setFontSize(9);
-      doc.text('Educational simulation only. Not medical advice. Drug effects approximated from FLOW, CREDENCE, EMPA-KIDNEY, FIDELIO.', 40, 690);
+      doc.text('Educational simulation only. Not medical advice. Drug effects approximated from FLOW, CREDENCE, EMPA-KIDNEY, FIDELIO.', 30, 615);
       doc.save(`cardiorenal_${state.profile}_snapshot.pdf`);
     }
 
@@ -1012,3 +963,5 @@
   </script>
 </body>
 </html>
+
+```
