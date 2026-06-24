@@ -467,7 +467,7 @@
           SGLT2i ~1.3 mL/yr eGFR (CREDENCE 2019, EMPA-KIDNEY 2023) + MACE −10% (primarily T2D trials) ·
           Finerenone (MRA): CKD progression RRR ~15%, CV events RRR ~14% (FIDELIO-DKD + FIGARO-DKD; DM only) ·
           <span class="text-purple-300">Semaglutide: ~1.16 mL/yr eGFR attenuation (~0.75 if on SGLT2i), MACE −18%, all-cause death −20% (FLOW, NEJM 2024; DM only)</span> ·
-          Combining SGLT2i + finerenone is endorsed in KDIGO 2024 and ADA 2025 as complementary (RAAS-independent mechanisms); individual class effects are modelled independently with mild diminishing returns at ≥3 agents.
+          Combination effects are subject to diminishing returns (≥3 agents: 20% reduction; ≥4 agents: further 15%). Maximum modelled slope reduction capped at 65% of baseline — consistent with residual progression in optimised trial arms. DKD minimum floor: 1.1 mL/yr (DM + albuminuria); G4 floor: ≥2.3 mL/yr.
           <br><span class="text-amber-400/80 font-medium">Educational simulation · not medical advice.</span>
         </div>
       </div>
@@ -728,8 +728,8 @@
       if(cfg.onSGLT2i){ protection += 1.3; agents++; }
       if(cfg.onMRA && cfg.diabetes){ protection += 0.5; agents++; }
       if(cfg.onSema && cfg.diabetes){ protection += (cfg.onSGLT2i?0.75:1.16); agents++; }
-      if(agents>=3) protection *= 0.90;
-      if(agents>=4) protection *= 0.95;
+      if(agents>=3) protection *= 0.80;   // was 0.90 — 20% DR for 3 agents
+      if(agents>=4) protection *= 0.85;   // was 0.95 — further 15% DR for 4th agent
 
       // Residual-risk floor (clinical realism: established damage limits reversal)
       let floorUacr = cfg.uacr;
@@ -737,16 +737,17 @@
       if(cfg.onSGLT2i) floorUacr *= 0.70;
       if(cfg.onMRA && cfg.diabetes) floorUacr *= 0.65;
       if(cfg.onSema && cfg.diabetes) floorUacr *= 0.80;
-      let floor = 0.5;
-      if(floorUacr>=1000) floor += 1.6;
-      else if(floorUacr>=300) floor += 1.0;
-      else if(floorUacr>=30) floor += 0.3;
+      let floor = 0.9;                              // raised from 0.5 — even optimal arms show ≥0.9 mL/yr
+      if(floorUacr>=1000) floor += 1.4;
+      else if(floorUacr>=300) floor += 0.9;
+      else if(floorUacr>=30)  floor += 0.3;
       if(current<30) floor += 0.5;
       if(cfg.diabetes && cfg.a1c>8.0) floor += 0.3;
-      if(cfg.diabetes && cfg.uacr>=300) floor = Math.max(floor, 1.5);
-      if(cfg.age>=65) floor = Math.max(floor, 1.2);
+      if(cfg.diabetes && cfg.uacr>=30)  floor = Math.max(floor, 1.1);  // DKD floor: no trial arm <1.1
+      if(cfg.diabetes && cfg.uacr>=300) floor = Math.max(floor, 1.9);  // raised from 1.5
+      if(cfg.age>=65) floor = Math.max(floor, 1.3);
 
-      protection = Math.min(protection, slope*0.85);
+      protection = Math.min(protection, slope*0.65); // was 0.85 — max 65% slope reduction
       slope = Math.max(slope-protection, floor);
       slope = clamp(slope, 0.2, 6.0);
       current = Math.max(0, current-slope);
@@ -1272,7 +1273,7 @@
 
     const egfrOpt = egfrProjection(inp.egfr,{
       age:inp.age,sbp:123,diabetes:inp.diabetes,a1c:inp.diabetes?6.8:inp.a1c,smoker:false,
-      bmi:Math.min(inp.bmi,inp.population==='asian'?23:25),population:inp.population,uacr:inp.uacr,
+      bmi:inp.bmi, population:inp.population,uacr:inp.uacr,
       egfr:inp.egfr,bpControlled:true,onACEi:true,onSGLT2i:true,
       onMRA:inp.diabetes?true:inp.onMRA,onSema:inp.diabetes?true:inp.onSema });
 
